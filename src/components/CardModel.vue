@@ -12,6 +12,7 @@ import {
   NTag,
   NDatePicker,
   NInputNumber,
+  NInput,
 } from "naive-ui";
 import {
   IosStarOutline,
@@ -24,12 +25,12 @@ import {
   IosAlert,
 } from "@vicons/ionicons4";
 import { ChecklistRound } from "@vicons/material";
+import GraphemeSplitter from "grapheme-splitter";
+
 import { TextDescription20Regular } from "@vicons/fluent";
-import BlockSuite from "@/components/BlockSuite.vue"
+import BlockSuite from "@/components/BlockSuite.vue";
 
-onMounted(() => {
-
-})
+onMounted(() => {});
 
 const bodyStyle = ref({ width: "856px" });
 const segmented = ref({
@@ -138,23 +139,27 @@ const importanceOptions = [
     value: "low",
   },
 ];
+const splitter = new GraphemeSplitter();
+const countGraphemes = (value) => splitter.countGraphemes(value);
+
+const members = [
+  {
+    label: "07akioni",
+    value: "07akioni",
+  },
+  {
+    label: "08akioni",
+    value: "08akioni",
+  },
+  {
+    label: "09akioni",
+    value: "09akioni",
+  },
+];
 const cardData = ref({
   title: "卡片線稿圖",
   description: "",
-  members: [
-    {
-      label: "07akioni",
-      value: "07akioni",
-    },
-    {
-      label: "08akioni",
-      value: "08akioni",
-    },
-    {
-      label: "09akioni",
-      value: "09akioni",
-    },
-  ],
+  members: [],
   tags: [],
   estimatedHours: 0,
 });
@@ -166,6 +171,7 @@ const cardData = ref({
   </n-button>
   <n-modal
     v-model:show="showModal"
+    :mask-closable="false"
     class="custom-card"
     preset="card"
     :style="bodyStyle"
@@ -191,10 +197,11 @@ const cardData = ref({
         </div>
       </li>
       <li class="flex">
-        <n-icon size="40" :component="MdTime" class="text-gray-300 mr-5" />
+        <n-icon size="40" :component="MdTime" class="text-gray-500 mr-5" />
         <div>
           <p class="text-xl">
-            <span class="text-base text-grey-500 mr-2">預估總工時</span>{{ cardData.estimatedHours }} 小時
+            <span class="text-base text-grey-500 mr-2">預估總工時</span
+            >{{ cardData.estimatedHours }} 小時
           </p>
           <p class="text-xl">
             <span class="text-base text-grey-500 mr-2">已使用工時</span>5 小時
@@ -202,7 +209,7 @@ const cardData = ref({
         </div>
       </li>
       <li class="flex">
-        <n-icon size="40" :component="ChecklistRound" class="text-gray-300 mr-5" />
+        <n-icon size="40" :component="ChecklistRound" class="text-gray-500 mr-5" />
         <div class="w-full">
           <p class="text-xl mb-3">完成率</p>
           <n-progress
@@ -223,42 +230,47 @@ const cardData = ref({
             <n-icon
               size="20"
               :component="TextDescription20Regular"
-              class="text-gray-300 block"
+              class="text-gray-500 block"
             />
           </label>
-          <input
-            id="cardDescription"
-            class="w-full"
-            type="text"
-            placeholder="請輸入卡片簡要描述"
-            v-model="cardData.description"
-          />
+          <div class="w-full">
+            <n-input
+              id="cardDescription"
+              size=""
+              show-count
+              :maxlength="50"
+              :count-graphemes="countGraphemes"
+              v-model:value="cardData.description"
+              placeholder="請輸入卡片簡要描述"
+            />
+          </div>
         </li>
         <!-- Card Members -->
         <li class="flex items-center mb-5">
           <label for="cardMembers" class="mr-4">
-            <n-icon size="20" :component="MdPeople" class="text-gray-300 block" />
+            <n-icon size="20" :component="MdPeople" class="text-gray-500 block" />
           </label>
           <n-select
             id="cardMembers"
             multiple
-            :options="cardData.members"
+            :options="members"
             :render-label="renderLabel"
             :render-tag="renderMultipleSelectTag"
+            v-model:value="cardData.members"
             filterable
           />
         </li>
         <!-- Card Tags -->
         <li class="flex items-center mb-5">
           <label for="cardTags" class="mr-4">
-            <n-icon size="20" :component="IosPricetags" class="text-gray-300 block" />
+            <n-icon size="20" :component="IosPricetags" class="text-gray-500 block" />
           </label>
           <n-dynamic-tags id="cardTags" v-model:value="cardData.tags" />
         </li>
         <!-- Card Notify -->
         <li class="flex items-center mb-5">
           <label for="cardNotify" class="mr-4">
-            <n-icon size="20" :component="MdNotifications" class="text-gray-300 block" />
+            <n-icon size="20" :component="MdNotifications" class="text-gray-500 block" />
           </label>
           <n-select
             id="cardNotify"
@@ -269,30 +281,36 @@ const cardData = ref({
         <!-- Card DeadLine -->
         <li class="flex items-center mb-5">
           <label for="cardDeadLine" class="mr-4">
-            <n-icon size="20" :component="MdCalendar" class="text-gray-300 block" />
+            <n-icon size="20" :component="MdCalendar" class="text-gray-500 block" />
           </label>
-          <n-date-picker id="cardDeadLine" v-model:value="timestamp" type="date" />
+          <n-date-picker
+            id="cardDeadLine"
+            v-model:value="timestamp"
+            type="date"
+            class="w-full"
+          />
         </li>
         <!-- Card WorkingHours -->
         <li class="flex items-center mb-5">
           <label for="cardEstimatedHours" class="mr-4">
-            <n-icon size="20" :component="MdTime" class="text-gray-300 block" />
+            <n-icon size="20" :component="MdTime" class="text-gray-500 block" />
           </label>
           <div class="mr-3">
             <n-input-number
               id="cardEstimatedHours"
-              placeholder="請輸入預估工時"
+              placeholder="0"
+              class="border"
               :min="0"
               :max="1000"
               v-model:value="cardData.estimatedHours"
             />
           </div>
-          <span>小時</span>
+          <!-- <span class="block">小時</span> -->
         </li>
         <!-- Card Importance -->
         <li class="flex items-center mb-5">
           <label for="cardImportance" class="mr-4">
-            <n-icon size="20" :component="IosAlert" class="text-gray-300 block" />
+            <n-icon size="20" :component="IosAlert" class="text-gray-500 block" />
           </label>
           <n-select
             id="cardImportance"
@@ -306,6 +324,17 @@ const cardData = ref({
     <section class="pb-6 mb-6 border-b">
       <h4 class="text-2xl mb-9">評論</h4>
       <ul>
+        <li class="flex items-center mb-4">
+          <n-avatar
+            round
+            size="large"
+            src="https://07akioni.oss-cn-beijing.aliyuncs.com/07akioni.jpeg"
+            class="mr-2"
+          />
+          <div class="w-full">
+            <n-input size="large" round placeholder="請輸入評論" />
+          </div>
+        </li>
         <li class="flex items-center">
           <n-avatar
             round
@@ -327,13 +356,14 @@ const cardData = ref({
     </section>
     <template #footer>
       <div class="flex justify-around">
-        <n-button>
-          確定
-        </n-button>
-        <n-button @click="showModal = false" type="tertiary">
-          取消
-        </n-button>
+        <n-button> 確定 </n-button>
+        <n-button @click="showModal = false" type="tertiary"> 取消 </n-button>
       </div>
     </template>
   </n-modal>
 </template>
+<style lang="scss">
+.n-card-header {
+  background: linear-gradient(to right, #ff006e, #00b3f0);
+}
+</style>
