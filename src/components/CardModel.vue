@@ -15,6 +15,7 @@ import {
 } from "naive-ui";
 import {
   IosStarOutline,
+  IosStar,
   MdCalendar,
   MdTime,
   MdPeople,
@@ -175,7 +176,9 @@ const cardData = ref({
     <!-- Card title -->
     <div class="flex justify-between mb-9">
       <h3 class="text-2xl">{{ cardData.title }}</h3>
-      <n-icon size="20" :component="IosStarOutline" />
+      <button @click="cardData.pinned = !cardData.pinned">
+        <n-icon size="20" :component="cardData.pinned ? IosStar : IosStarOutline" />
+      </button>
     </div>
     <!-- Card header Info -->
     <ul class="grid grid-cols-3 pb-6 mb-6 border-b">
@@ -327,7 +330,7 @@ const cardData = ref({
         <n-button>
           確定
         </n-button>
-        <n-button type="tertiary">
+        <n-button @click="showModal = false" type="tertiary">
           取消
         </n-button>
       </div>
