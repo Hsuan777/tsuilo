@@ -28,7 +28,9 @@ import { ChecklistRound } from "@vicons/material";
 import GraphemeSplitter from "grapheme-splitter";
 
 import { TextDescription20Regular } from "@vicons/fluent";
-import BlockSuite from "@/components/BlockSuite.vue";
+
+// import BlockSuite from "@/components/BlockSuite.vue";
+import CKEditor from "@/components/CKEditor.vue";
 
 onMounted(() => {});
 
@@ -124,7 +126,7 @@ const notifyOptions = [
     value: "changeMember",
   },
 ];
-const timestamp = ref(118313526e4);
+const timestamp = ref(Date.now());
 const importanceOptions = [
   {
     label: "高",
@@ -191,9 +193,9 @@ const cardData = ref({
       <li class="flex">
         <n-icon size="40" :component="MdCalendar" class="text-red-500 mr-5" />
         <div>
-          <p class="text-xl">還有 6 天</p>
-          <p class="text-sm">於 2023/03/13 建立</p>
-          <p class="text-sm">於 2023/05/18 建立</p>
+          <p class="text-xl">還有 5 天</p>
+          <p class="text-sm">於 2023/05/13 建立</p>
+          <p class="text-sm">於 2023/05/18 到期</p>
         </div>
       </li>
       <li class="flex">
@@ -352,7 +354,8 @@ const cardData = ref({
     <!-- Card Content -->
     <section class="pb-6 mb-6">
       <h4 class="text-2xl">卡片內容</h4>
-      <BlockSuite />
+      <!-- <BlockSuite /> -->
+      <CKEditor />
     </section>
     <template #footer>
       <div class="flex justify-around">

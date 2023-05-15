@@ -1,6 +1,6 @@
 <script setup>
 import { RouterLink, RouterView } from 'vue-router'
-import CardModel from './components/CardModel.vue'
+import CardModel from './components/CardModel.vue';
 </script>
 
 <template>
