@@ -25,9 +25,7 @@ import {
   IosAlert,
 } from "@vicons/ionicons4";
 import { ChecklistRound } from "@vicons/material";
-import GraphemeSplitter from "grapheme-splitter";
-
-import { TextDescription20Regular } from "@vicons/fluent";
+import CardDescription from "@/components/cardProperties/CardDescription.vue";
 
 // import BlockSuite from "@/components/BlockSuite.vue";
 import CKEditor from "@/components/CKEditor.vue";
@@ -40,6 +38,7 @@ const segmented = ref({
   footer: "soft",
 });
 const showModal = ref(false);
+// 多選下拉選單
 const renderMultipleSelectTag = ({ option, handleClose }) => {
   return h(
     NTag,
@@ -116,34 +115,6 @@ const renderLabel = (option) => {
     ]
   );
 };
-const notifyOptions = [
-  {
-    label: "到期日前兩天通知",
-    value: "expiryDate",
-  },
-  {
-    label: "變更成員時",
-    value: "changeMember",
-  },
-];
-const timestamp = ref(Date.now());
-const importanceOptions = [
-  {
-    label: "高",
-    value: "high",
-  },
-  {
-    label: "中",
-    value: "medium",
-  },
-  {
-    label: "低",
-    value: "low",
-  },
-];
-const splitter = new GraphemeSplitter();
-const countGraphemes = (value) => splitter.countGraphemes(value);
-
 const members = [
   {
     label: "07akioni",
@@ -158,6 +129,37 @@ const members = [
     value: "09akioni",
   },
 ];
+// 通知選項
+const notifyOptions = [
+  {
+    label: "到期日前兩天通知",
+    value: "expiryDate",
+  },
+  {
+    label: "變更成員時",
+    value: "changeMember",
+  },
+];
+// 到期日選擇
+const timestamp = ref(Date.now());
+
+// 重要性選項
+const importanceOptions = [
+  {
+    label: "高",
+    value: "high",
+  },
+  {
+    label: "中",
+    value: "medium",
+  },
+  {
+    label: "低",
+    value: "low",
+  },
+];
+
+
 const cardData = ref({
   title: "卡片線稿圖",
   description: "",
@@ -165,6 +167,9 @@ const cardData = ref({
   tags: [],
   estimatedHours: 0,
 });
+const getCardDescription = (value) => {
+  cardData.value.description = value;
+}
 </script>
 
 <template>
@@ -227,25 +232,8 @@ const cardData = ref({
     <form action="" class="pb-6 mb-6 border-b">
       <ul>
         <!-- Card Description -->
-        <li class="flex items-center mb-5">
-          <label for="cardDescription" class="mr-4">
-            <n-icon
-              size="20"
-              :component="TextDescription20Regular"
-              class="text-gray-500 block"
-            />
-          </label>
-          <div class="w-full">
-            <n-input
-              id="cardDescription"
-              size=""
-              show-count
-              :maxlength="50"
-              :count-graphemes="countGraphemes"
-              v-model:value="cardData.description"
-              placeholder="請輸入卡片簡要描述"
-            />
-          </div>
+        <li class="mb-5">
+          <CardDescription :description="cardData.description" @update="getCardDescription" />
         </li>
         <!-- Card Members -->
         <li class="flex items-center mb-5">
