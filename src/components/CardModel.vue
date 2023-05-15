@@ -1,5 +1,5 @@
 <script setup>
-import { ref, h, onMounted } from "vue";
+import { ref, onMounted } from "vue";
 import {
   NButton,
   NModal,
@@ -8,8 +8,6 @@ import {
   NDynamicTags,
   NSelect,
   NAvatar,
-  NText,
-  NTag,
   NDatePicker,
   NInputNumber,
   NInput,
@@ -19,13 +17,13 @@ import {
   IosStar,
   MdCalendar,
   MdTime,
-  MdPeople,
   IosPricetags,
   MdNotifications,
   IosAlert,
 } from "@vicons/ionicons4";
 import { ChecklistRound } from "@vicons/material";
 import CardDescription from "@/components/cardProperties/CardDescription.vue";
+import CardMembers from "@/components/cardProperties/CardMembers.vue";
 
 // import BlockSuite from "@/components/BlockSuite.vue";
 import CKEditor from "@/components/CKEditor.vue";
@@ -38,97 +36,7 @@ const segmented = ref({
   footer: "soft",
 });
 const showModal = ref(false);
-// 多選下拉選單
-const renderMultipleSelectTag = ({ option, handleClose }) => {
-  return h(
-    NTag,
-    {
-      style: {
-        padding: "0 6px 0 4px",
-      },
-      round: true,
-      closable: true,
-      onClose: (e) => {
-        e.stopPropagation();
-        handleClose();
-      },
-    },
-    {
-      default: () =>
-        h(
-          "div",
-          {
-            style: {
-              display: "flex",
-              alignItems: "center",
-            },
-          },
-          [
-            h(NAvatar, {
-              src: "https://07akioni.oss-cn-beijing.aliyuncs.com/07akioni.jpeg",
-              round: true,
-              size: 22,
-              style: {
-                marginRight: "4px",
-              },
-            }),
-            option.label,
-          ]
-        ),
-    }
-  );
-};
-const renderLabel = (option) => {
-  return h(
-    "div",
-    {
-      style: {
-        display: "flex",
-        alignItems: "center",
-      },
-    },
-    [
-      h(NAvatar, {
-        src: "https://07akioni.oss-cn-beijing.aliyuncs.com/07akioni.jpeg",
-        round: true,
-        size: "small",
-      }),
-      h(
-        "div",
-        {
-          style: {
-            marginLeft: "12px",
-            padding: "4px 0",
-          },
-        },
-        [
-          h("div", null, [option.label]),
-          h(
-            NText,
-            { depth: 3, tag: "div" },
-            {
-              default: () => "description",
-            }
-          ),
-        ]
-      ),
-    ]
-  );
-};
-const members = [
-  {
-    label: "07akioni",
-    value: "07akioni",
-  },
-  {
-    label: "08akioni",
-    value: "08akioni",
-  },
-  {
-    label: "09akioni",
-    value: "09akioni",
-  },
-];
+
 // 通知選項
 const notifyOptions = [
   {
@@ -169,6 +77,9 @@ const cardData = ref({
 });
 const getCardDescription = (value) => {
   cardData.value.description = value;
+}
+const getCardMembers = (value) => {
+  cardData.value.members = value;
 }
 </script>
 
@@ -236,19 +147,8 @@ const getCardDescription = (value) => {
           <CardDescription :description="cardData.description" @update="getCardDescription" />
         </li>
         <!-- Card Members -->
-        <li class="flex items-center mb-5">
-          <label for="cardMembers" class="mr-4">
-            <n-icon size="20" :component="MdPeople" class="text-gray-500 block" />
-          </label>
-          <n-select
-            id="cardMembers"
-            multiple
-            :options="members"
-            :render-label="renderLabel"
-            :render-tag="renderMultipleSelectTag"
-            v-model:value="cardData.members"
-            filterable
-          />
+        <li class="mb-5">
+          <CardMembers :members="cardData.members" @update="getCardMembers" />
         </li>
         <!-- Card Tags -->
         <li class="flex items-center mb-5">
