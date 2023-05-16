@@ -15,7 +15,6 @@ import {
   IosStarOutline,
   IosStar,
   MdCalendar,
-  MdNotifications,
   IosAlert,
   MdTime
 } from "@vicons/ionicons4";
@@ -23,6 +22,7 @@ import { ChecklistRound } from "@vicons/material";
 import CardDescription from "@/components/cardProperties/CardDescription.vue";
 import CardMembers from "@/components/cardProperties/CardMembers.vue";
 import CardTags from "@/components/cardProperties/CardTags.vue";
+import CardNotifications from "@/components/cardProperties/CardNotifications.vue";
 
 // import BlockSuite from "@/components/BlockSuite.vue";
 import CKEditor from "@/components/CKEditor.vue";
@@ -36,17 +36,7 @@ const segmented = ref({
 });
 const showModal = ref(false);
 
-// 通知選項
-const notifyOptions = [
-  {
-    label: "到期日前兩天通知",
-    value: "expiryDate",
-  },
-  {
-    label: "變更成員時",
-    value: "changeMember",
-  },
-];
+
 // 到期日選擇
 const timestamp = ref(Date.now());
 
@@ -72,6 +62,7 @@ const cardData = ref({
   description: "",
   members: [],
   tags: [],
+  notification: "",
   estimatedHours: 0,
 });
 const getCardDescription = (value) => {
@@ -82,6 +73,9 @@ const getCardMembers = (value) => {
 }
 const getCardTags = (value) => {
   cardData.value.tags = value;
+}
+const getCardNotification = (value) => {
+  cardData.value.notification = value;
 }
 
 </script>
@@ -158,15 +152,8 @@ const getCardTags = (value) => {
           <CardTags :tags="cardData.tags" @update="getCardTags" />
         </li>
         <!-- Card Notify -->
-        <li class="flex items-center mb-5">
-          <label for="cardNotify" class="mr-4">
-            <n-icon size="20" :component="MdNotifications" class="text-gray-500 block" />
-          </label>
-          <n-select
-            id="cardNotify"
-            v-model:value="cardData.notify"
-            :options="notifyOptions"
-          />
+        <li class="mb-5">
+          <CardNotifications :notification="cardData.notification" @update="getCardNotification" />
         </li>
         <!-- Card DeadLine -->
         <li class="flex items-center mb-5">
