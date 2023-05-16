@@ -7,7 +7,6 @@ import {
   NProgress,
   NSelect,
   NAvatar,
-  NInputNumber,
   NInput,
 } from "naive-ui";
 import {
@@ -23,6 +22,8 @@ import CardMembers from "@/components/cardProperties/CardMembers.vue";
 import CardTags from "@/components/cardProperties/CardTags.vue";
 import CardNotifications from "@/components/cardProperties/CardNotifications.vue";
 import CardDeadLine from "@/components/cardProperties/CardDeadLine.vue";
+import CardWorkingHours from "@/components/cardProperties/CardWorkingHours.vue";
+import CardImportance from "@/components/cardProperties/CardImportance.vue";
 
 // import BlockSuite from "@/components/BlockSuite.vue";
 import CKEditor from "@/components/CKEditor.vue";
@@ -61,7 +62,7 @@ const cardData = ref({
   tags: [],
   notification: "",
   deadLine: Date.now(),
-  estimatedHours: 0,
+  workingHours: 0,
 });
 const getCardDescription = (value) => {
   cardData.value.description = value;
@@ -78,7 +79,9 @@ const getCardNotification = (value) => {
 const getCardDeadLine = (value) => {
   cardData.value.deadLine = value;
 }
-
+const getCardWorkingHours = (value) => {
+  cardData.value.workingHours = value;
+}
 </script>
 
 <template>
@@ -117,7 +120,7 @@ const getCardDeadLine = (value) => {
         <div>
           <p class="text-xl">
             <span class="text-base text-grey-500 mr-2">預估總工時</span
-            >{{ cardData.estimatedHours }} 小時
+            >{{ cardData.workingHours }} 小時
           </p>
           <p class="text-xl">
             <span class="text-base text-grey-500 mr-2">已使用工時</span>5 小時
@@ -162,23 +165,11 @@ const getCardDeadLine = (value) => {
         </li>
         <!-- Card WorkingHours -->
         <li class="flex items-center mb-5">
-          <label for="cardEstimatedHours" class="mr-4">
-            <n-icon size="20" :component="MdTime" class="text-gray-500 block" />
-          </label>
-          <div class="mr-3">
-            <n-input-number
-              id="cardEstimatedHours"
-              placeholder="0"
-              class="border"
-              :min="0"
-              :max="1000"
-              v-model:value="cardData.estimatedHours"
-            />
-          </div>
-          <!-- <span class="block">小時</span> -->
+          <CardWorkingHours :workingHours="cardData.workingHours" @update="getCardWorkingHours" />
         </li>
         <!-- Card Importance -->
         <li class="flex items-center mb-5">
+          <CardImportance :workingHours="cardData.importance" @update="getCardImportance" />
           <label for="cardImportance" class="mr-4">
             <n-icon size="20" :component="IosAlert" class="text-gray-500 block" />
           </label>
