@@ -7,7 +7,6 @@ import {
   NProgress,
   NSelect,
   NAvatar,
-  NDatePicker,
   NInputNumber,
   NInput,
 } from "naive-ui";
@@ -23,6 +22,7 @@ import CardDescription from "@/components/cardProperties/CardDescription.vue";
 import CardMembers from "@/components/cardProperties/CardMembers.vue";
 import CardTags from "@/components/cardProperties/CardTags.vue";
 import CardNotifications from "@/components/cardProperties/CardNotifications.vue";
+import CardDeadLine from "@/components/cardProperties/CardDeadLine.vue";
 
 // import BlockSuite from "@/components/BlockSuite.vue";
 import CKEditor from "@/components/CKEditor.vue";
@@ -36,9 +36,6 @@ const segmented = ref({
 });
 const showModal = ref(false);
 
-
-// 到期日選擇
-const timestamp = ref(Date.now());
 
 // 重要性選項
 const importanceOptions = [
@@ -63,6 +60,7 @@ const cardData = ref({
   members: [],
   tags: [],
   notification: "",
+  deadLine: Date.now(),
   estimatedHours: 0,
 });
 const getCardDescription = (value) => {
@@ -76,6 +74,9 @@ const getCardTags = (value) => {
 }
 const getCardNotification = (value) => {
   cardData.value.notification = value;
+}
+const getCardDeadLine = (value) => {
+  cardData.value.deadLine = value;
 }
 
 </script>
@@ -156,16 +157,8 @@ const getCardNotification = (value) => {
           <CardNotifications :notification="cardData.notification" @update="getCardNotification" />
         </li>
         <!-- Card DeadLine -->
-        <li class="flex items-center mb-5">
-          <label for="cardDeadLine" class="mr-4">
-            <n-icon size="20" :component="MdCalendar" class="text-gray-500 block" />
-          </label>
-          <n-date-picker
-            id="cardDeadLine"
-            v-model:value="timestamp"
-            type="date"
-            class="w-full"
-          />
+        <li class="mb-5">
+          <CardDeadLine :deadLine="cardData.deadLine" @update="getCardDeadLine" />
         </li>
         <!-- Card WorkingHours -->
         <li class="flex items-center mb-5">
