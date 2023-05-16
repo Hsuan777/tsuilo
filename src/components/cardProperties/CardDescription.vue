@@ -1,5 +1,5 @@
 <script setup>
-import { ref, defineProps, defineEmits } from 'vue';
+import { ref } from 'vue';
 import { TextDescription20Regular } from "@vicons/fluent";
 import GraphemeSplitter from "grapheme-splitter";
 import {

@@ -1,5 +1,5 @@
 <script setup>
-import { ref, defineProps, defineEmits, watch } from "vue";
+import { ref, watch } from "vue";
 import { NIcon, NSelect } from "naive-ui";
 const props = defineProps({
   notification: {

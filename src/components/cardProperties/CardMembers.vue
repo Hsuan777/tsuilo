@@ -1,5 +1,5 @@
 <script setup>
-import { ref, defineProps, defineEmits, watch, h } from 'vue';
+import { ref, watch, h } from 'vue';
 import {
   NIcon,
   NTag,
