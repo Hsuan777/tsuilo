@@ -5,7 +5,6 @@ import {
   NModal,
   NIcon,
   NProgress,
-  NDynamicTags,
   NSelect,
   NAvatar,
   NDatePicker,
@@ -16,14 +15,14 @@ import {
   IosStarOutline,
   IosStar,
   MdCalendar,
-  MdTime,
-  IosPricetags,
   MdNotifications,
   IosAlert,
+  MdTime
 } from "@vicons/ionicons4";
 import { ChecklistRound } from "@vicons/material";
 import CardDescription from "@/components/cardProperties/CardDescription.vue";
 import CardMembers from "@/components/cardProperties/CardMembers.vue";
+import CardTags from "@/components/cardProperties/CardTags.vue";
 
 // import BlockSuite from "@/components/BlockSuite.vue";
 import CKEditor from "@/components/CKEditor.vue";
@@ -81,6 +80,10 @@ const getCardDescription = (value) => {
 const getCardMembers = (value) => {
   cardData.value.members = value;
 }
+const getCardTags = (value) => {
+  cardData.value.tags = value;
+}
+
 </script>
 
 <template>
@@ -151,11 +154,8 @@ const getCardMembers = (value) => {
           <CardMembers :members="cardData.members" @update="getCardMembers" />
         </li>
         <!-- Card Tags -->
-        <li class="flex items-center mb-5">
-          <label for="cardTags" class="mr-4">
-            <n-icon size="20" :component="IosPricetags" class="text-gray-500 block" />
-          </label>
-          <n-dynamic-tags id="cardTags" v-model:value="cardData.tags" />
+        <li class="mb-5">
+          <CardTags :tags="cardData.tags" @update="getCardTags" />
         </li>
         <!-- Card Notify -->
         <li class="flex items-center mb-5">
