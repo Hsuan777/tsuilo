@@ -17,6 +17,7 @@ const comments = ref(props.comments);
 const inputComment = ref("");
 const person = ref(props.person);
 const submitComment = (event) => {
+  if (event.target.value === "") return;
   const comment = {
     id: "qqwewww-221w" + Date.now(),
     name: "Vic",
