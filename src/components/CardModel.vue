@@ -5,8 +5,6 @@ import {
   NModal,
   NIcon,
   NProgress,
-  NAvatar,
-  NInput,
 } from "naive-ui";
 import {
   IosStarOutline,
@@ -22,6 +20,7 @@ import CardNotifications from "@/components/cardProperties/CardNotifications.vue
 import CardDeadLine from "@/components/cardProperties/CardDeadLine.vue";
 import CardWorkingHours from "@/components/cardProperties/CardWorkingHours.vue";
 import CardImportance from "@/components/cardProperties/CardImportance.vue";
+import CardComments from "@/components/cardProperties/CardComments.vue";
 
 // import BlockSuite from "@/components/BlockSuite.vue";
 import CKEditor from "@/components/CKEditor.vue";
@@ -34,6 +33,10 @@ const segmented = ref({
   footer: "soft",
 });
 const showModal = ref(false);
+const person = ref({
+  name: "Iven",
+  avatar: "https://07akioni.oss-cn-beijing.aliyuncs.com/07akioni.jpeg"
+})
 const cardData = ref({
   title: "卡片線稿圖",
   description: "",
@@ -42,7 +45,23 @@ const cardData = ref({
   notification: "",
   deadLine: Date.now(),
   workingHours: 0,
-  importance: ""
+  importance: "",
+  comments: [
+    {
+      id: "qqweqw-221w",
+      name: "Iven",
+      avatar: "https://07akioni.oss-cn-beijing.aliyuncs.com/07akioni.jpeg",
+      comment: "任務清單會有狀態嗎? 例如進行中、已完成，這樣儀錶板就有資料可以分析",
+      createAt: Date.now(),
+    },
+    {
+      id: "qqwewww-221w",
+      name: "金金",
+      avatar: "https://07akioni.oss-cn-beijing.aliyuncs.com/07akioni.jpeg",
+      comment: "留言測試",
+      createAt: Date.now(),
+    }
+  ]
 });
 const getCardDescription = (value) => {
   cardData.value.description = value;
@@ -64,6 +83,9 @@ const getCardWorkingHours = (value) => {
 }
 const getCardImportance = (value) => {
   cardData.value.importance = value;
+}
+const getCardComment = (value) => {
+  cardData.value.comments.push(value);
 }
 </script>
 
@@ -159,31 +181,7 @@ const getCardImportance = (value) => {
     <!-- Card Comment -->
     <section class="pb-6 mb-6 border-b">
       <h4 class="text-2xl mb-9">評論</h4>
-      <ul>
-        <li class="flex items-center mb-4">
-          <n-avatar
-            round
-            size="large"
-            src="https://07akioni.oss-cn-beijing.aliyuncs.com/07akioni.jpeg"
-            class="mr-2"
-          />
-          <div class="w-full">
-            <n-input size="large" round placeholder="請輸入評論" />
-          </div>
-        </li>
-        <li class="flex items-center">
-          <n-avatar
-            round
-            size="large"
-            src="https://07akioni.oss-cn-beijing.aliyuncs.com/07akioni.jpeg"
-            class="mr-2"
-          />
-          <div>
-            <p class="text-xl">Ivan<span class="text-sm ml-2">2023/03/23</span></p>
-            <p>任務清單會有狀態嗎? 例如進行中、已完成，這樣儀錶板就有資料可以分析</p>
-          </div>
-        </li>
-      </ul>
+      <CardComments :person="person" :comments="cardData.comments" @updateComment="getCardComment"/>
     </section>
     <!-- Card Content -->
     <section class="pb-6 mb-6">
