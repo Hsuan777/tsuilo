@@ -3,7 +3,7 @@ import { ref, watch } from "vue";
 import { NIcon, NDatePicker } from "naive-ui";
 const props = defineProps({
   deadLine: {
-    type: String,
+    type: Number,
     required: true,
   },
 });
