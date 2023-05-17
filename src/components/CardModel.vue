@@ -21,6 +21,7 @@ import CardDeadLine from "@/components/cardProperties/CardDeadLine.vue";
 import CardWorkingHours from "@/components/cardProperties/CardWorkingHours.vue";
 import CardImportance from "@/components/cardProperties/CardImportance.vue";
 import CardComments from "@/components/cardProperties/CardComments.vue";
+import CardToDoList from "@/components/cardProperties/CardToDoList.vue";
 
 // import BlockSuite from "@/components/BlockSuite.vue";
 import CKEditor from "@/components/CKEditor.vue";
@@ -61,6 +62,14 @@ const cardData = ref({
       comment: "留言測試",
       createAt: Date.now(),
     }
+  ],
+  toDoList: [
+    {
+      id: "qwe-123",
+      title: "製作 ToDoList",
+      workingHours: 0,
+      isFinished: false
+    }
   ]
 });
 const getCardDescription = (value) => {
@@ -86,6 +95,9 @@ const getCardImportance = (value) => {
 }
 const getCardComment = (value) => {
   cardData.value.comments.push(value);
+}
+const getCardToDoList = (value) => {
+  cardData.value.toDoList = value;
 }
 </script>
 
@@ -188,6 +200,10 @@ const getCardComment = (value) => {
       <h4 class="text-2xl">卡片內容</h4>
       <!-- <BlockSuite /> -->
       <CKEditor />
+    </section>
+    <section class="pb-6 mb-6">
+      <h4 class="text-2xl">待辦清單</h4>
+      <CardToDoList :toDoList="cardData.toDoList" @updateToDoList="getCardToDoList"/>
     </section>
     <template #footer>
       <div class="flex justify-around">
