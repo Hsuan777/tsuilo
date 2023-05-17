@@ -9,7 +9,7 @@ const props = defineProps({
 });
 import { MdTime } from "@vicons/ionicons4";
 const emits = defineEmits(["update"]);
-const workingHours = ref(props.deadLine);
+const workingHours = ref(props.workingHours);
 watch(
   () => workingHours.value,
   () => {

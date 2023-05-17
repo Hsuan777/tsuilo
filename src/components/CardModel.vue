@@ -147,7 +147,7 @@ const getCardImportance = (value) => {
           <CardDeadLine :deadLine="cardData.deadLine" @update="getCardDeadLine" />
         </li>
         <!-- Card WorkingHours -->
-        <li class="flex items-center mb-5">
+        <li class="mb-5">
           <CardWorkingHours :workingHours="cardData.workingHours" @update="getCardWorkingHours" />
         </li>
         <!-- Card Importance -->
