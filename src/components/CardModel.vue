@@ -5,7 +5,6 @@ import {
   NModal,
   NIcon,
   NProgress,
-  NSelect,
   NAvatar,
   NInput,
 } from "naive-ui";
@@ -13,7 +12,6 @@ import {
   IosStarOutline,
   IosStar,
   MdCalendar,
-  IosAlert,
   MdTime
 } from "@vicons/ionicons4";
 import { ChecklistRound } from "@vicons/material";
@@ -36,25 +34,6 @@ const segmented = ref({
   footer: "soft",
 });
 const showModal = ref(false);
-
-
-// 重要性選項
-const importanceOptions = [
-  {
-    label: "高",
-    value: "high",
-  },
-  {
-    label: "中",
-    value: "medium",
-  },
-  {
-    label: "低",
-    value: "low",
-  },
-];
-
-
 const cardData = ref({
   title: "卡片線稿圖",
   description: "",
@@ -63,6 +42,7 @@ const cardData = ref({
   notification: "",
   deadLine: Date.now(),
   workingHours: 0,
+  importance: ""
 });
 const getCardDescription = (value) => {
   cardData.value.description = value;
@@ -81,6 +61,9 @@ const getCardDeadLine = (value) => {
 }
 const getCardWorkingHours = (value) => {
   cardData.value.workingHours = value;
+}
+const getCardImportance = (value) => {
+  cardData.value.importance = value;
 }
 </script>
 
@@ -168,16 +151,8 @@ const getCardWorkingHours = (value) => {
           <CardWorkingHours :workingHours="cardData.workingHours" @update="getCardWorkingHours" />
         </li>
         <!-- Card Importance -->
-        <li class="flex items-center mb-5">
-          <CardImportance :workingHours="cardData.importance" @update="getCardImportance" />
-          <label for="cardImportance" class="mr-4">
-            <n-icon size="20" :component="IosAlert" class="text-gray-500 block" />
-          </label>
-          <n-select
-            id="cardImportance"
-            v-model:value="cardData.importance"
-            :options="importanceOptions"
-          />
+        <li class="mb-5">
+          <CardImportance :importance="cardData.importance" @update="getCardImportance" />
         </li>
       </ul>
     </form>
