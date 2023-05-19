@@ -1,5 +1,5 @@
 <script setup>
-import { ref, onMounted } from "vue";
+import { ref, onMounted, computed } from "vue";
 import {
   NButton,
   NModal,
@@ -22,6 +22,7 @@ import CardWorkingHours from "@/components/cardProperties/CardWorkingHours.vue";
 import CardImportance from "@/components/cardProperties/CardImportance.vue";
 import CardComments from "@/components/cardProperties/CardComments.vue";
 import CardToDoList from "@/components/cardProperties/CardToDoList.vue";
+import { v4 as uuidv4 } from "uuid";
 
 // import BlockSuite from "@/components/BlockSuite.vue";
 import CKEditor from "@/components/CKEditor.vue";
@@ -65,7 +66,7 @@ const cardData = ref({
   ],
   toDoList: [
     {
-      id: "qwe-123",
+      id: uuidv4(),
       title: "製作 ToDoList",
       workingHours: 0,
       isFinished: false
@@ -99,6 +100,19 @@ const getCardComment = (value) => {
 const getCardToDoList = (value) => {
   cardData.value.toDoList = value;
 }
+
+const toDoPercent = computed(() => {
+  const filterFinished = cardData.value.toDoList.filter((toDo) => toDo.isFinished === true);
+  const percent = Math.round((filterFinished.length / cardData.value.toDoList.length) * 100);
+  return percent;
+})
+const toDoListWorkingHoursCount = computed(() => {
+  let count = 0;
+  cardData.value.toDoList.forEach((toDo) => {
+    count += toDo.workingHours;
+  });
+  return count;
+})
 </script>
 
 <template>
@@ -140,7 +154,7 @@ const getCardToDoList = (value) => {
             >{{ cardData.workingHours }} 小時
           </p>
           <p class="text-xl">
-            <span class="text-base text-grey-500 mr-2">已使用工時</span>5 小時
+            <span class="text-base text-grey-500 mr-2">已使用工時</span>{{ toDoListWorkingHoursCount }} 小時
           </p>
         </div>
       </li>
@@ -150,7 +164,7 @@ const getCardToDoList = (value) => {
           <p class="text-xl mb-3">完成率</p>
           <n-progress
             type="line"
-            :percentage="60"
+            :percentage="toDoPercent"
             :indicator-placement="'inside'"
             processing
           />
