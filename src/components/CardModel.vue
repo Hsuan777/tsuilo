@@ -13,16 +13,17 @@ import {
   MdTime
 } from "@vicons/ionicons4";
 import { ChecklistRound } from "@vicons/material";
+import { DateTime } from "luxon";
+import { v4 as uuidv4 } from "uuid";
 import CardDescription from "@/components/cardProperties/CardDescription.vue";
 import CardMembers from "@/components/cardProperties/CardMembers.vue";
 import CardTags from "@/components/cardProperties/CardTags.vue";
 import CardNotifications from "@/components/cardProperties/CardNotifications.vue";
-import CardDeadLine from "@/components/cardProperties/CardDeadLine.vue";
+import CardDateRange from "@/components/cardProperties/CardDateRange.vue";
 import CardWorkingHours from "@/components/cardProperties/CardWorkingHours.vue";
 import CardImportance from "@/components/cardProperties/CardImportance.vue";
 import CardComments from "@/components/cardProperties/CardComments.vue";
 import CardToDoList from "@/components/cardProperties/CardToDoList.vue";
-import { v4 as uuidv4 } from "uuid";
 
 // import BlockSuite from "@/components/BlockSuite.vue";
 import CKEditor from "@/components/CKEditor.vue";
@@ -45,7 +46,7 @@ const cardData = ref({
   members: [],
   tags: [],
   notification: "",
-  deadLine: Date.now(),
+  dateRange: [Date.now(), Date.now()],
   workingHours: 0,
   importance: "",
   comments: [
@@ -69,6 +70,7 @@ const cardData = ref({
       id: uuidv4(),
       title: "製作 ToDoList",
       workingHours: 0,
+      dateRange: [Date.now(), Date.now()],
       isFinished: false
     }
   ]
@@ -85,8 +87,8 @@ const getCardTags = (value) => {
 const getCardNotification = (value) => {
   cardData.value.notification = value;
 }
-const getCardDeadLine = (value) => {
-  cardData.value.deadLine = value;
+const getCardDateRange = (value) => {
+  cardData.value.dateRange = value;
 }
 const getCardWorkingHours = (value) => {
   cardData.value.workingHours = value;
@@ -97,13 +99,13 @@ const getCardImportance = (value) => {
 const getCardComment = (value) => {
   cardData.value.comments.push(value);
 }
-const getCardToDoList = (value) => {
-  cardData.value.toDoList = value;
+const getCardToDoList = (toDoList) => {
+  cardData.value.toDoList = toDoList;
 }
 
 const toDoPercent = computed(() => {
   const filterFinished = cardData.value.toDoList.filter((toDo) => toDo.isFinished === true);
-  const percent = Math.round((filterFinished.length / cardData.value.toDoList.length) * 100);
+  let percent = Math.round((filterFinished.length / cardData.value.toDoList.length) * 100) || 0;
   return percent;
 })
 const toDoListWorkingHoursCount = computed(() => {
@@ -113,6 +115,13 @@ const toDoListWorkingHoursCount = computed(() => {
   });
   return count;
 })
+const daysDiff = (startTimeStamp, endTimeStamp) => {
+  const startDate = DateTime.fromMillis(startTimeStamp);
+  const endDate = DateTime.fromMillis(endTimeStamp);
+  const diff = endDate.diff(startDate, 'days').toObject();
+  const daysDiff = Math.ceil(diff.days);
+  return daysDiff;
+}
 </script>
 
 <template>
@@ -133,7 +142,7 @@ const toDoListWorkingHoursCount = computed(() => {
     <div class="flex justify-between mb-9">
       <h3 class="text-2xl">{{ cardData.title }}</h3>
       <button @click="cardData.pinned = !cardData.pinned">
-        <n-icon size="20" :component="cardData.pinned ? IosStar : IosStarOutline" />
+        <n-icon size="20" :component="cardData.pinned ? IosStar : IosStarOutline" :class="cardData.pinned? 'text-red-500': ''"/>
       </button>
     </div>
     <!-- Card header Info -->
@@ -141,9 +150,9 @@ const toDoListWorkingHoursCount = computed(() => {
       <li class="flex">
         <n-icon size="40" :component="MdCalendar" class="text-red-500 mr-5" />
         <div>
-          <p class="text-xl">還有 5 天</p>
-          <p class="text-sm">於 2023/05/13 建立</p>
-          <p class="text-sm">於 2023/05/18 到期</p>
+          <p class="text-xl">{{ Date.now() < cardData.dateRange[0]? `還有 ${ daysDiff(Date.now(), cardData.dateRange[0]) } 天開始` : `倒數 ${ daysDiff(cardData.dateRange[0], cardData.dateRange[1]) } 天` }}</p>
+          <p class="text-sm">於 {{ DateTime.fromMillis(cardData.dateRange[0]).toFormat('yyyy/MM/dd') }} 開始</p>
+          <p class="text-sm">於 {{ DateTime.fromMillis(cardData.dateRange[1]).toFormat('yyyy/MM/dd') }} 到期</p>
         </div>
       </li>
       <li class="flex">
@@ -192,7 +201,7 @@ const toDoListWorkingHoursCount = computed(() => {
         </li>
         <!-- Card DeadLine -->
         <li class="mb-5">
-          <CardDeadLine :deadLine="cardData.deadLine" @update="getCardDeadLine" />
+          <CardDateRange :dateRange="cardData.dateRange" @update="getCardDateRange" />
         </li>
         <!-- Card WorkingHours -->
         <li class="mb-5">

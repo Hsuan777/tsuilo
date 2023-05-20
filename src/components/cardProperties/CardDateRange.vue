@@ -2,32 +2,33 @@
 import { ref, watch } from "vue";
 import { NIcon, NDatePicker } from "naive-ui";
 const props = defineProps({
-  deadLine: {
-    type: Number,
+  dateRange: {
+    type: Array,
     required: true,
   },
+  disable: {
+    type: Boolean,
+  }
 });
 import { MdCalendar } from "@vicons/ionicons4";
 const emits = defineEmits(["update"]);
-const deadLine = ref(props.deadLine);
+const dateRange = ref(props.dateRange);
+const disable = ref(props.disable);
 watch(
-  () => deadLine.value,
+  () => dateRange.value,
   () => {
-    emits("update", deadLine.value);
+    emits("update", dateRange.value);
   }
 );
 </script>
 <template>
   <div class="flex items-center">
-    <label for="cardDeadLine" class="mr-4">
+    <label for="cardDatePicker" class="mr-4">
       <n-icon size="20" :component="MdCalendar" class="text-gray-500 block" />
     </label>
-    <n-date-picker
-      id="cardDeadLine"
-      v-model:value="deadLine"
-      type="date"
-      class="w-full"
-    />
+    <div class="w-full">
+      <n-date-picker v-model:value="dateRange" type="daterange" :disabled="disable" clearable />
+    </div>
   </div>
 </template>
 <style></style>
