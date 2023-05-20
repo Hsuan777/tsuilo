@@ -43,6 +43,7 @@ const person = ref({
 const cardData = ref({
   title: "卡片線稿圖",
   description: "",
+  isPinned: false,
   members: [],
   tags: [],
   notification: "",
@@ -51,14 +52,14 @@ const cardData = ref({
   importance: "",
   comments: [
     {
-      id: "qqweqw-221w",
+      id: uuidv4(),
       name: "Iven",
       avatar: "https://07akioni.oss-cn-beijing.aliyuncs.com/07akioni.jpeg",
       comment: "任務清單會有狀態嗎? 例如進行中、已完成，這樣儀錶板就有資料可以分析",
       createAt: Date.now(),
     },
     {
-      id: "qqwewww-221w",
+      id: uuidv4(),
       name: "金金",
       avatar: "https://07akioni.oss-cn-beijing.aliyuncs.com/07akioni.jpeg",
       comment: "留言測試",
@@ -154,8 +155,8 @@ const submitCardData = () => {
     <!-- Card title -->
     <div class="flex justify-between mb-9">
       <h3 class="text-2xl">{{ cardData.title }}</h3>
-      <button @click="cardData.pinned = !cardData.pinned">
-        <n-icon size="20" :component="cardData.pinned ? IosStar : IosStarOutline" :class="cardData.pinned? 'text-red-500': ''"/>
+      <button @click="cardData.isPinned = !cardData.isPinned">
+        <n-icon size="20" :component="cardData.isPinned ? IosStar : IosStarOutline" :class="cardData.isPinned? 'text-red-500': ''"/>
       </button>
     </div>
     <!-- Card header Info -->

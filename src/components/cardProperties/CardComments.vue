@@ -2,6 +2,7 @@
 import { ref } from "vue";
 import { NAvatar, NInput } from "naive-ui";
 import { DateTime } from "luxon";
+import { v4 as uuidv4 } from "uuid";
 const props = defineProps({
   comments: {
     type: Array,
@@ -19,8 +20,8 @@ const person = ref(props.person);
 const submitComment = (event) => {
   if (event.target.value === "") return;
   const comment = {
-    id: "qqwewww-221w" + Date.now(),
-    name: "Vic",
+    id: uuidv4(),
+    name: person.value.name,
     avatar: "https://07akioni.oss-cn-beijing.aliyuncs.com/07akioni.jpeg",
     comment: event.target.value,
     createAt: Date.now(),
