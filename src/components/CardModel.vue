@@ -1,5 +1,6 @@
 <script setup>
-import { ref, onMounted, computed } from "vue";
+import { ref, computed } from "vue";
+import { useNotification } from "naive-ui";
 import {
   NButton,
   NModal,
@@ -28,8 +29,7 @@ import CardToDoList from "@/components/cardProperties/CardToDoList.vue";
 // import BlockSuite from "@/components/BlockSuite.vue";
 import CKEditor from "@/components/CKEditor.vue";
 
-onMounted(() => {});
-
+const notification = useNotification();
 const bodyStyle = ref({ width: "856px" });
 const segmented = ref({
   content: "soft",
@@ -121,6 +121,15 @@ const daysDiff = (startTimeStamp, endTimeStamp) => {
   const diff = endDate.diff(startDate, 'days').toObject();
   const daysDiff = Math.ceil(diff.days);
   return daysDiff;
+}
+const submitCardData = () => {
+  console.log("submit");
+  notification.create({
+    title: "電子圍籬區域",
+    description: "修改範圍結果",
+    content: `修改成功`,
+    meta: DateTime.fromMillis(Date.now()).toFormat('yyyy/MM/dd'),
+  });
 }
 </script>
 
@@ -230,7 +239,7 @@ const daysDiff = (startTimeStamp, endTimeStamp) => {
     </section>
     <template #footer>
       <div class="flex justify-around">
-        <n-button> 確定 </n-button>
+        <n-button @click="submitCardData"> 確定 </n-button>
         <n-button @click="showModal = false" type="tertiary"> 取消 </n-button>
       </div>
     </template>

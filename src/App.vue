@@ -1,23 +1,25 @@
 <script setup>
 import { RouterLink, RouterView } from 'vue-router'
 import CardModel from './components/CardModel.vue';
+import { NNotificationProvider, NMessageProvider } from "naive-ui";
 </script>
 
 <template>
-  <header>
-    <img alt="Vue logo" class="logo" src="@/assets/logo.svg" width="125" height="125" />
-
-    <div class="wrapper">
-
-      <nav>
-        <RouterLink to="/">Home</RouterLink>
-        <RouterLink to="/about">About</RouterLink>
-        <CardModel />
-      </nav>
-    </div>
-  </header>
-
-  <RouterView />
+  <n-message-provider>
+    <n-notification-provider>
+      <header>
+        <img alt="Vue logo" class="logo" src="@/assets/logo.svg" width="125" height="125" />
+        <div class="wrapper">
+          <nav>
+            <RouterLink to="/">Home</RouterLink>
+            <RouterLink to="/about">About</RouterLink>
+            <CardModel />
+          </nav>
+        </div>
+      </header>
+      <RouterView />
+    </n-notification-provider>
+  </n-message-provider>
 </template>
 
 <style scoped>

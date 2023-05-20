@@ -11,9 +11,16 @@ const props = defineProps({
   }
 });
 import { MdCalendar } from "@vicons/ionicons4";
+import { DateTime } from "luxon";
+
 const emits = defineEmits(["update"]);
 const dateRange = ref(props.dateRange);
 const disable = ref(props.disable);
+const disablePreviousDate = (ts) => {
+  const today = DateTime.local().startOf('day');
+  const selectedDate = DateTime.fromMillis(ts);
+  return selectedDate < today;
+}
 watch(
   () => dateRange.value,
   () => {
@@ -27,7 +34,7 @@ watch(
       <n-icon size="20" :component="MdCalendar" class="text-gray-500 block" />
     </label>
     <div class="w-full">
-      <n-date-picker v-model:value="dateRange" type="daterange" :disabled="disable" clearable />
+      <n-date-picker v-model:value="dateRange" type="daterange" :is-date-disabled="disablePreviousDate" :disabled="disable" />
     </div>
   </div>
 </template>
