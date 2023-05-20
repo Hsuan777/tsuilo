@@ -123,13 +123,17 @@ const daysDiff = (startTimeStamp, endTimeStamp) => {
   return daysDiff;
 }
 const submitCardData = () => {
-  console.log("submit");
   notification.create({
-    title: "電子圍籬區域",
-    description: "修改範圍結果",
-    content: `修改成功`,
+    title: "送出卡片",
+    content: `已儲存`,
+    duration: 2000,
+    closable: false,
     meta: DateTime.fromMillis(Date.now()).toFormat('yyyy/MM/dd'),
+    onAfterLeave: () => {
+      showModal.value = false;
+    }
   });
+
 }
 </script>
 
