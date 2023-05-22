@@ -41,6 +41,7 @@ const cardData = ref({
   dateRange: [Date.now(), Date.now()],
   workingHours: 0,
   importance: "",
+  content: "<p>Hello, CKEditor 5!</p>",
   comments: [
     {
       id: uuidv4(),
@@ -90,6 +91,9 @@ const getCardImportance = (value) => {
 };
 const getCardComment = (value) => {
   cardData.value.comments.push(value);
+};
+const getCardContent = (value) => {
+  cardData.value.content = value;
 };
 const getCardToDoList = (toDoList) => {
   cardData.value.toDoList = toDoList;
@@ -282,7 +286,7 @@ const submitCardData = () => {
     <section class="pb-6 mb-6">
       <h4 class="text-2xl">卡片內容</h4>
       <!-- <BlockSuite /> -->
-      <CKEditor />
+      <CKEditor :content="cardData.content" @update="getCardContent" />
     </section>
     <section class="pb-6 mb-6">
       <h4 class="text-2xl">待辦清單</h4>
