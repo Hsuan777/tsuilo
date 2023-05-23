@@ -29,6 +29,7 @@ const segmented = ref({
 const showModal = ref(false);
 const isEditTitle = ref(false);
 const person = ref({
+  id: "qqq-xxx",
   name: "Iven",
   avatar: "https://07akioni.oss-cn-beijing.aliyuncs.com/07akioni.jpeg",
 });
@@ -46,15 +47,21 @@ const cardData = ref({
   comments: [
     {
       id: uuidv4(),
-      name: "Iven",
-      avatar: "https://07akioni.oss-cn-beijing.aliyuncs.com/07akioni.jpeg",
+      commenter: {
+        id: "qqq-xxx",
+        name: "Iven",
+        avatar: "https://07akioni.oss-cn-beijing.aliyuncs.com/07akioni.jpeg",
+      },
       comment: "任務清單會有狀態嗎? 例如進行中、已完成，這樣儀錶板就有資料可以分析",
       createAt: Date.now(),
     },
     {
       id: uuidv4(),
-      name: "金金",
-      avatar: "https://07akioni.oss-cn-beijing.aliyuncs.com/07akioni.jpeg",
+      commenter: {
+        id: "aaa-xxx",
+        name: "金金",
+        avatar: "https://07akioni.oss-cn-beijing.aliyuncs.com/07akioni.jpeg",
+      },
       comment: "留言測試",
       createAt: Date.now(),
     },
@@ -91,7 +98,7 @@ const getCardImportance = (value) => {
   cardData.value.importance = value;
 };
 const getCardComment = (value) => {
-  cardData.value.comments.push(value);
+  cardData.value.comments = value;
 };
 const getCardContent = (value) => {
   cardData.value.content = value;
