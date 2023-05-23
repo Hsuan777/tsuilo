@@ -17,7 +17,8 @@ import CardComments from "@/components/cardProperties/CardComments.vue";
 import CardToDoList from "@/components/cardProperties/CardToDoList.vue";
 
 // import BlockSuite from "@/components/BlockSuite.vue";
-import CKEditor from "@/components/CKEditor.vue";
+// import CKEditor from "@/components/CKEditor.vue";
+import QuillEditor from "@/components/QuillEditor.vue";
 
 const notification = useNotification();
 const bodyStyle = ref({ width: "856px" });
@@ -41,7 +42,7 @@ const cardData = ref({
   dateRange: [Date.now(), Date.now()],
   workingHours: 0,
   importance: "",
-  content: "<p>Hello, CKEditor 5!</p>",
+  content: null,
   comments: [
     {
       id: uuidv4(),
@@ -286,7 +287,8 @@ const submitCardData = () => {
     <section class="pb-6 mb-6">
       <h4 class="text-2xl">卡片內容</h4>
       <!-- <BlockSuite /> -->
-      <CKEditor :content="cardData.content" @update="getCardContent" />
+      <!-- <CKEditor :content="cardData.content" @update="getCardContent" /> -->
+      <QuillEditor :content="cardData.content" @update="getCardContent" />
     </section>
     <section class="pb-6 mb-6">
       <h4 class="text-2xl">待辦清單</h4>
