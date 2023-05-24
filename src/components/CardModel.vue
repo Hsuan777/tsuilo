@@ -1,11 +1,11 @@
 <script setup>
-import { ref, computed } from "vue";
+import { ref, watch, computed } from "vue";
 import { NButton, NModal, NIcon, NProgress, NInput, useNotification } from "naive-ui";
 import { IosStarOutline, IosStar, MdCalendar, MdTime, MdCheckmark } from "@vicons/ionicons4";
 import { ChecklistRound } from "@vicons/material";
 import { Edit20Regular } from "@vicons/fluent";
 import { DateTime } from "luxon";
-import { v4 as uuidv4 } from "uuid";
+
 import CardDescription from "@/components/cardProperties/CardDescription.vue";
 import CardMembers from "@/components/cardProperties/CardMembers.vue";
 import CardTags from "@/components/cardProperties/CardTags.vue";
@@ -26,6 +26,14 @@ const segmented = ref({
   content: "soft",
   footer: "soft",
 });
+
+const props = defineProps({
+  cardData: {
+    type: Object,
+    require: true
+  }
+});
+const emit = defineEmits(["update"]);
 const showModal = ref(false);
 const isEditTitle = ref(false);
 const person = ref({
@@ -33,49 +41,7 @@ const person = ref({
   name: "Iven",
   avatar: "https://07akioni.oss-cn-beijing.aliyuncs.com/07akioni.jpeg",
 });
-const cardData = ref({
-  title: "卡片線稿圖",
-  description: "",
-  isPinned: false,
-  members: [],
-  tags: [],
-  notification: "",
-  dateRange: [Date.now(), Date.now()],
-  workingHours: 0,
-  importance: "",
-  content: null,
-  comments: [
-    {
-      id: uuidv4(),
-      commenter: {
-        id: "qqq-xxx",
-        name: "Iven",
-        avatar: "https://07akioni.oss-cn-beijing.aliyuncs.com/07akioni.jpeg",
-      },
-      comment: "任務清單會有狀態嗎? 例如進行中、已完成，這樣儀錶板就有資料可以分析",
-      createAt: Date.now(),
-    },
-    {
-      id: uuidv4(),
-      commenter: {
-        id: "aaa-xxx",
-        name: "金金",
-        avatar: "https://07akioni.oss-cn-beijing.aliyuncs.com/07akioni.jpeg",
-      },
-      comment: "留言測試",
-      createAt: Date.now(),
-    },
-  ],
-  toDoList: [
-    {
-      id: uuidv4(),
-      title: "製作 ToDoList",
-      workingHours: 0,
-      dateRange: [Date.now(), Date.now()],
-      isFinished: false,
-    },
-  ],
-});
+const cardData = ref(props.cardData);
 const getCardDescription = (value) => {
   cardData.value.description = value;
 };
@@ -130,8 +96,9 @@ const daysDiff = (startTimeStamp, endTimeStamp) => {
   return daysDiff;
 };
 const submitCardData = () => {
+  emit("update", cardData.value);
   notification.create({
-    title: "送出卡片",
+    title: "送出卡片資料",
     content: `已儲存`,
     duration: 2000,
     closable: false,
@@ -141,10 +108,15 @@ const submitCardData = () => {
     },
   });
 };
+// watch(() => cardData.value, () => {
+//   emit("update", cardData.value);
+// }, {
+//   deep: true
+// })
 </script>
 
 <template>
-  <n-button @click="showModal = true">
+  <n-button @click="showModal = true" class="w-full text-white text-right">
     {{ cardData.title }}
   </n-button>
   <n-modal

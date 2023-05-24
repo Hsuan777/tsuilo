@@ -1,6 +1,5 @@
 <script setup>
 import { RouterLink, RouterView } from 'vue-router'
-import CardModel from './components/CardModel.vue';
 import { NNotificationProvider, NMessageProvider } from "naive-ui";
 </script>
 
@@ -13,7 +12,6 @@ import { NNotificationProvider, NMessageProvider } from "naive-ui";
           <nav>
             <RouterLink to="/">Home</RouterLink>
             <RouterLink to="/about">About</RouterLink>
-            <CardModel />
           </nav>
         </div>
       </header>
