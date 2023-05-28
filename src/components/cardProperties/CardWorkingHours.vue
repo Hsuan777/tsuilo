@@ -1,5 +1,5 @@
 <script setup>
-import { ref, watch } from "vue";
+import { ref } from "vue";
 import { NIcon, NInputNumber } from "naive-ui";
 import IconSpin from "@/components/IconSpin.vue";
 
