@@ -4,7 +4,8 @@ import { NButton, NModal, NIcon, NProgress, NInput, useNotification } from "naiv
 import { IosStarOutline, IosStar, MdCalendar, MdTime, MdCheckmark } from "@vicons/ionicons4";
 import { ChecklistRound } from "@vicons/material";
 import { Edit20Regular } from "@vicons/fluent";
-import { DateTime } from "luxon";
+import { DateTime } from "luxon"
+import axios from  "axios";
 
 import CardDescription from "@/components/cardProperties/CardDescription.vue";
 import CardMembers from "@/components/cardProperties/CardMembers.vue";
@@ -20,7 +21,8 @@ import CardToDoList from "@/components/cardProperties/CardToDoList.vue";
 // import CKEditor from "@/components/CKEditor.vue";
 import QuillEditor from "@/components/QuillEditor.vue";
 
-const notification = useNotification();
+const apiUrl = import.meta.env.VITE_API_URL;
+// const notification = useNotification();
 const bodyStyle = ref({ width: "856px" });
 const segmented = ref({
   content: "soft",
@@ -33,9 +35,12 @@ const props = defineProps({
     require: true
   }
 });
-const emit = defineEmits(["update"]);
 const showModal = ref(false);
 const isEditTitle = ref(false);
+const isLoading = ref({
+  description: false
+})
+
 const person = ref({
   id: "qqq-xxx",
   name: "Iven",
@@ -44,6 +49,7 @@ const person = ref({
 const cardData = ref(props.cardData);
 const getCardDescription = (value) => {
   cardData.value.description = value;
+  isLoading.value.description = true;
 };
 const getCardMembers = (value) => {
   cardData.value.members = value;
@@ -95,24 +101,33 @@ const daysDiff = (startTimeStamp, endTimeStamp) => {
   const daysDiff = Math.ceil(diff.days);
   return daysDiff;
 };
-const submitCardData = () => {
-  emit("update", cardData.value);
-  notification.create({
-    title: "送出卡片資料",
-    content: `已儲存`,
-    duration: 2000,
-    closable: false,
-    meta: DateTime.fromMillis(Date.now()).toFormat("yyyy/MM/dd"),
-    onAfterLeave: () => {
-      showModal.value = false;
-    },
-  });
+const isLoadingReset = () => {
+  const keys = Object.keys(isLoading.value)
+  keys.forEach((key) => {
+    isLoading.value[key] = false
+  })
+}
+const submitCardData = async () => {
+  // emit("update", cardData.value);
+  const {data} = await axios.patch(apiUrl + "/cards/" + cardData.value._id, cardData.value);
+  console.log(data);
+  isLoadingReset();
+  // notification.create({
+  //   title: "送出卡片資料",
+  //   content: `已儲存`,
+  //   duration: 2000,
+  //   closable: false,
+  //   meta: DateTime.fromMillis(Date.now()).toFormat("yyyy/MM/dd"),
+  //   onAfterLeave: () => {
+  //     showModal.value = false;
+  //   },
+  // });
 };
-// watch(() => cardData.value, () => {
-//   emit("update", cardData.value);
-// }, {
-//   deep: true
-// })
+watch(() => cardData.value, () => {
+  submitCardData();
+}, {
+  deep: true
+})
 </script>
 
 <template>
@@ -218,6 +233,7 @@ const submitCardData = () => {
         <li class="mb-5">
           <CardDescription
             :description="cardData.description"
+            :isLoading="isLoading.description"
             @update="getCardDescription"
           />
         </li>

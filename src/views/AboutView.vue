@@ -1,57 +1,20 @@
 <script setup>
-import { ref } from "vue";
-import { v4 as uuidv4 } from "uuid";
+import { ref, reactive, onMounted } from "vue";
 import CardModel from "@/components/CardModel.vue";
 import Signin from "@/components/Signin.vue";
 import { NInput } from "naive-ui";
 import axios from  "axios";
 
+const ws = reactive(new WebSocket(import.meta.env.VITE_WS_URL));
+
+ws.addEventListener("open", () => {
+   // Listen for messages
+   ws.addEventListener("message", (event) => {
+    console.log("Message from server ", event.data);
+  });
+});
 const apiUrl = import.meta.env.VITE_API_URL;
-const cards = ref([
-  {
-    title: "卡片線稿圖",
-    description: "",
-    isPinned: false,
-    members: [],
-    tags: [],
-    notification: "",
-    dateRange: [Date.now(), Date.now()],
-    workingHours: 0,
-    importance: "",
-    content: null,
-    comments: [
-      {
-        id: uuidv4(),
-        commenter: {
-          id: "qqq-xxx",
-          name: "Iven",
-          avatar: "https://07akioni.oss-cn-beijing.aliyuncs.com/07akioni.jpeg",
-        },
-        comment: "任務清單會有狀態嗎? 例如進行中、已完成，這樣儀錶板就有資料可以分析",
-        createAt: Date.now(),
-      },
-      {
-        id: uuidv4(),
-        commenter: {
-          id: "aaa-xxx",
-          name: "金金",
-          avatar: "https://07akioni.oss-cn-beijing.aliyuncs.com/07akioni.jpeg",
-        },
-        comment: "留言測試",
-        createAt: Date.now(),
-      },
-    ],
-    toDoList: [
-      {
-        id: uuidv4(),
-        title: "製作 ToDoList",
-        workingHours: 0,
-        dateRange: [Date.now(), Date.now()],
-        isFinished: false,
-      },
-    ],
-  },
-]);
+const cards = ref([]);
 const checkToken = () => {
   const token = document.cookie.replace(/(?:(?:^|.*;\s*)tsToken\s*=\s*([^;]*).*$)|^.*$/, '$1');
   if (!token) {
@@ -77,13 +40,10 @@ const getCards = async () => {
   const {data} = await axios.get(apiUrl + "/cards");
   cards.value = data.data;
 }
-getCards();
-const updateCard = async (cardData) => {
-  console.log(cardData);
-  const {data} = await axios.patch(apiUrl + "/cards/" + cardData._id, cardData);
-  console.log(data);
 
-}
+onMounted(() => {
+  getCards();
+})
 </script>
 <template>
   <div>
@@ -95,7 +55,7 @@ const updateCard = async (cardData) => {
     <h2 class="text-center mb-3">卡片清單</h2>
     <ul class="border p-2">
       <li v-for="card in cards" :key="card.id" class="mb-3">
-        <CardModel :cardData="card" @update="updateCard"/>
+        <CardModel :cardData="card" />
       </li>
     </ul>
   </div>
