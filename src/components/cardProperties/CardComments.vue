@@ -33,11 +33,11 @@ const checkToken = () => {
   axios.defaults.headers.common.Authorization = `Bearer ${token}` ;
   return true;
 }
-const submitComment = async (event) => {
-  if (event.target.value === "") return;
+const submitComment = async () => {
+  if (inputComment.value === "") return;
   if (!checkToken()) return;
   const comment = {
-    comment: event.target.value,
+    comment: inputComment.value,
   };
   await axios.post(`${apiUrl}/cards/${props.cardId}/comment`, comment);
   notification.create({

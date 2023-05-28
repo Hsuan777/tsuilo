@@ -33,11 +33,11 @@ const checkToken = () => {
   axios.defaults.headers.common.Authorization = `Bearer ${token}` ;
   return true;
 }
-const submitToDo = async (event) => {
-  if (event.target.value === "") return;
+const submitToDo = async () => {
+  if (inputToDo.value === "") return;
   if (!checkToken()) return;
   const toDo = {
-    title: event.target.value,
+    title: inputToDo.value,
   };
   const {data} = await axios.post(`${apiUrl}/cards/${props.cardId}/toDoList`, toDo);
   notification.create({
@@ -47,8 +47,8 @@ const submitToDo = async (event) => {
     closable: false,
     meta: DateTime.fromMillis(Date.now()).toFormat("yyyy/MM/dd hh:mm:ss"),
   });
-  emits("updateToDoList", true);
   inputToDo.value = "";
+  emits("updateToDoList", true);
 };
 const editType = (toDo) => {
   editToDo.value = toDo;
