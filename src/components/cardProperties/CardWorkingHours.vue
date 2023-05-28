@@ -10,18 +10,14 @@ const props = defineProps({
   },
   isLoading: {
     type: Boolean,
-    required: true,
   }
 });
 import { MdTime } from "@vicons/ionicons4";
 const emits = defineEmits(["update"]);
 const workingHours = ref(props.workingHours);
-watch(
-  () => workingHours.value,
-  () => {
-    emits("update", workingHours.value);
-  }
-);
+const getOnUpdate = () => {
+  emits("update", workingHours.value);
+}
 </script>
 <template>
   <div class="flex items-center">
@@ -37,6 +33,7 @@ watch(
         :min="0"
         :max="1000"
         v-model:value="workingHours"
+        :on-blur="getOnUpdate"
       />
     </div>
   </div>
