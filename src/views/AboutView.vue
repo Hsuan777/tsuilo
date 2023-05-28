@@ -45,7 +45,6 @@ const checkUser = async () => {
   if (!checkToken()) return;
   const {data} = await axios.get(apiUrl + "/profile");
   person.value = data.data;
-  console.log(person.value);
 }
 
 onMounted(() => {

@@ -1,79 +1,94 @@
 <script setup>
-import { ref } from "vue";
-import { NInput, NCheckbox, NIcon } from "naive-ui";
+import { ref, watch } from "vue";
+import { NInput, NCheckbox, NIcon, useNotification } from "naive-ui";
 import { Delete20Regular, Edit20Regular } from "@vicons/fluent";
 import { Open } from "@vicons/ionicons5";
-import { v4 as uuidv4 } from "uuid";
 import { MdTime, MdCheckmark } from "@vicons/ionicons4";
 import CardWorkingHours from "@/components/cardProperties/CardWorkingHours.vue";
 import CardDateRange from "@/components/cardProperties/CardDateRange.vue";
+import axios from  "axios";
+import { DateTime } from "luxon";
 
+const apiUrl = import.meta.env.VITE_API_URL;
 const props = defineProps({
   toDoList: {
     type: Array,
     required: true,
   },
+  cardId : {
+    type: String,
+    required: true,
+  }
 });
 const emits = defineEmits(["updateToDoList"]);
 const toDoList = ref(props.toDoList);
+const notification = useNotification();
 const inputToDo = ref("");
 const editToDo = ref({});
-const submitToDo = (event) => {
+const checkToken = () => {
+  const token = document.cookie.replace(/(?:(?:^|.*;\s*)tsToken\s*=\s*([^;]*).*$)|^.*$/, '$1');
+  if (!token) {
+    return false;
+  }
+  axios.defaults.headers.common.Authorization = `Bearer ${token}` ;
+  return true;
+}
+const submitToDo = async (event) => {
   if (event.target.value === "") return;
+  if (!checkToken()) return;
   const toDo = {
-    id: uuidv4(),
     title: event.target.value,
-    workingHours: 0,
-    dateRange: [Date.now(), Date.now()],
-    isFinished: false,
   };
-  toDoList.value.push(toDo);
-  emits("updateToDoList", toDoList.value);
+  const {data} = await axios.post(`${apiUrl}/cards/${props.cardId}/toDoList`, toDo);
+  notification.create({
+    title: "新增待辦資訊",
+    content: data.data,
+    duration: 2000,
+    closable: false,
+    meta: DateTime.fromMillis(Date.now()).toFormat("yyyy/MM/dd hh:mm:ss"),
+  });
+  emits("updateToDoList", true);
   inputToDo.value = "";
 };
-const editType = (toDoId) => {
-  toDoList.value.forEach((toDo) => {
-    if (toDo.id === toDoId) {
-      editToDo.value = toDo;
-    }
-  })
+const editType = (toDo) => {
+  editToDo.value = toDo;
 }
-const editData = (toDoId) => {
-  toDoList.value.forEach((toDo, index) => {
-    if (toDo.id === toDoId) {
-      toDoList.value[index].title = editToDo.value.title;
-    }
-  })
-  emits("updateToDoList", toDoList.value);
+const editData = async (toDoId) => {
+  const {data} = await axios.patch(`${apiUrl}/cards/${props.cardId}/toDoList/${toDoId}`, editToDo.value);
+  notification.create({
+    title: "修改待辦資訊",
+    content: data.data,
+    duration: 2000,
+    closable: false,
+    meta: DateTime.fromMillis(Date.now()).toFormat("yyyy/MM/dd hh:mm:ss"),
+  });
   editToDo.value = {};
+  emits("updateToDoList", true);
 }
-const removeData = (toDoId) => {
-  toDoList.value.forEach((toDo, index) => {
-    if (toDo.id === toDoId) {
-      toDoList.value.splice(index, 1);
-    }
-  })
-  emits("updateToDoList", toDoList.value);
+const removeToDo = async (toDoId) => {
+  if (!checkToken()) return;
+  const {data} = await axios.delete(`${apiUrl}/cards/${props.cardId}/toDoList/${toDoId}`);
+  notification.create({
+    title: "移除待辦資訊",
+    content: data.data,
+    duration: 2000,
+    closable: false,
+    meta: DateTime.fromMillis(Date.now()).toFormat("yyyy/MM/dd hh:mm:ss"),
+  });
+  emits("updateToDoList", true);
 }
 const saveAsCard = () => {
   console.log("save as card");
 }
 const getToDoWorkingHours = (value) => {
-  toDoList.value.forEach((toDo, index) => {
-    if (toDo.id === editToDo.value.id) {
-      toDoList.value[index].workingHours = value;
-    }
-  })
-  emits("updateToDoList", toDoList.value);
+  editToDo.value.workingHours = value;
 }
 const getToDoDateRange = (value) => {
-  toDoList.value.forEach((toDo, index) => {
-    if (toDo.id === editToDo.value.id) {
-      toDoList.value[index].dateRange = value;
-    }
-  })
-  emits("updateToDoList", toDoList.value);
+  editToDo.value.dateRange = value;
 }
+watch(() => props.toDoList, () => {
+  toDoList.value = props.toDoList;
+});
 </script>
 <template>
   <ul>
@@ -88,26 +103,26 @@ const getToDoDateRange = (value) => {
         />
       </div>
     </li>
-    <li v-for="toDo in toDoList" :key="toDo.id" class="flex items-center group hover:bg-gray-100 p-2 rounded">
-      <div v-if="toDo.id === editToDo.id" class="flex items-center gap-3">
+    <li v-for="toDo in toDoList" :key="toDo._id" class="flex items-center group hover:bg-gray-100 p-2 rounded">
+      <div v-if="toDo._id === editToDo._id" class="flex items-center gap-3">
         <div>
           <n-input
             placeholder="請修改待辦事項"
             v-model:value="editToDo.title"
-            @keydown.enter="editData(toDo.id)"
+            @keydown.enter="editData(toDo._id)"
             round
           />
         </div>
         <CardWorkingHours :workingHours="editToDo.workingHours" @update="getToDoWorkingHours" />
         <CardDateRange :dateRange="editToDo.dateRange" @update="getToDoDateRange" />
-        <n-icon size="20" :component="MdCheckmark" class="text-gray-400 cursor-pointer hover:text-gray-800" @click="editData(toDo.id)"/>
+        <n-icon size="20" :component="MdCheckmark" class="text-gray-400 cursor-pointer hover:text-gray-800" @click="editData(toDo._id)"/>
       </div>
       <div v-else class="flex w-full items-center">
         <n-checkbox v-model:checked="toDo.isFinished"> {{ toDo.title }} </n-checkbox>
-        <div v-if="!editToDo.id" class="hidden group-hover:flex mr-3">
-          <n-icon size="20" :component="Edit20Regular" class="text-gray-400 cursor-pointer hover:text-gray-800" @click="editType(toDo.id)"/>
-          <n-icon size="20" :component="Delete20Regular" class="text-gray-400 cursor-pointer hover:text-gray-800 mx-3" @click="removeData(toDo.id)"/>
-          <n-icon size="20" :component="Open" class="text-gray-400 cursor-pointer hover:text-gray-800" @click="saveAsCard(toDo.id)"/>
+        <div v-if="!editToDo._id" class="hidden group-hover:flex mr-3">
+          <n-icon size="20" :component="Edit20Regular" class="text-gray-400 cursor-pointer hover:text-gray-800" @click="editType(toDo)"/>
+          <n-icon size="20" :component="Delete20Regular" class="text-gray-400 cursor-pointer hover:text-gray-800 mx-3" @click="removeToDo(toDo._id)"/>
+          <n-icon size="20" :component="Open" class="text-gray-400 cursor-pointer hover:text-gray-800" @click="saveAsCard(toDo._id)"/>
         </div>
         <div class="flex items-center ml-auto mr-3">
           <n-icon size="20" :component="MdTime" class="text-gray-500 block mr-1" />

@@ -2,7 +2,6 @@
 import { ref, watch } from "vue";
 import { NAvatar, NInput, NIcon, useNotification } from "naive-ui";
 import { DateTime } from "luxon";
-// import { v4 as uuidv4 } from "uuid";
 import { Delete20Regular } from "@vicons/fluent";
 import axios from  "axios";
 
@@ -23,7 +22,6 @@ const props = defineProps({
 });
 const emits = defineEmits(["updateComment"]);
 const comments = ref(props.comments);
-const cardId = ref(props.cardId);
 const person = ref(props.person);
 const inputComment = ref("");
 const notification = useNotification();
@@ -41,7 +39,7 @@ const submitComment = async (event) => {
   const comment = {
     comment: event.target.value,
   };
-  await axios.post(`${apiUrl}/cards/${cardId.value}/comment`, comment);
+  await axios.post(`${apiUrl}/cards/${props.cardId}/comment`, comment);
   notification.create({
     title: "新增評論",
     content: "成功",
@@ -53,7 +51,7 @@ const submitComment = async (event) => {
   emits("updateComment", true);
 };
 const removeComment = async (commentId) => {
-  await axios.delete(`${apiUrl}/cards/${cardId.value}/comment/${commentId}`);
+  await axios.delete(`${apiUrl}/cards/${props.cardId}/comment/${commentId}`);
   notification.create({
     title: "移除評論",
     content: "成功",

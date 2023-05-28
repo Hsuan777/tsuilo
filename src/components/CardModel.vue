@@ -77,8 +77,11 @@ const getCardComment = async (value) => {
 const getCardContent = (value) => {
   cardData.value.content = value;
 };
-const getCardToDoList = (toDoList) => {
-  cardData.value.toDoList = toDoList;
+const getCardToDoList = async (value) => {
+  if (value) {
+    const {data} = await axios.get(`${apiUrl}/cards/${cardData.value._id}`);
+    cardData.value.toDoList = data.data.toDoList
+  }
 };
 
 const toDoPercent = computed(() => {
@@ -281,7 +284,7 @@ watch(() => props.person, () => {
     </section>
     <section class="pb-6 mb-6">
       <h4 class="text-2xl">待辦清單</h4>
-      <CardToDoList :toDoList="cardData.toDoList" @updateToDoList="getCardToDoList" />
+      <CardToDoList :cardId="cardData._id" :toDoList="cardData.toDoList" @updateToDoList="getCardToDoList" />
     </section>
     <template #footer>
       <div class="flex justify-around">
