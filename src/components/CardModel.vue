@@ -1,11 +1,17 @@
 <script setup>
 import { ref, watch, computed } from "vue";
 import { NButton, NModal, NIcon, NProgress, NInput } from "naive-ui";
-import { IosStarOutline, IosStar, MdCalendar, MdTime, MdCheckmark } from "@vicons/ionicons4";
+import {
+  IosStarOutline,
+  IosStar,
+  MdCalendar,
+  MdTime,
+  MdCheckmark,
+} from "@vicons/ionicons4";
 import { ChecklistRound } from "@vicons/material";
 import { Edit20Regular } from "@vicons/fluent";
-import { DateTime } from "luxon"
-import axios from  "axios";
+import { DateTime } from "luxon";
+import axios from "axios";
 
 import CardDescription from "@/components/cardProperties/CardDescription.vue";
 import CardMembers from "@/components/cardProperties/CardMembers.vue";
@@ -31,18 +37,24 @@ const segmented = ref({
 const props = defineProps({
   cardData: {
     type: Object,
-    require: true
+    require: true,
   },
   person: {
     type: Object,
-    require: true
-  }
+    require: true,
+  },
 });
 const showModal = ref(false);
 const isEditTitle = ref(false);
 const isLoading = ref({
-  description: false
-})
+  description: false,
+  members: false,
+  tags: false,
+  notification: false,
+  dateRange: false,
+  workingHours: false,
+  importance: false,
+});
 
 const cardData = ref(props.cardData);
 const person = ref(props.person);
@@ -52,35 +64,41 @@ const getCardDescription = (value) => {
 };
 const getCardMembers = (value) => {
   cardData.value.members = value;
+  isLoading.value.members = true;
 };
 const getCardTags = (value) => {
   cardData.value.tags = value;
+  isLoading.value.tags = true;
 };
 const getCardNotification = (value) => {
   cardData.value.notification = value;
+  isLoading.value.notification = true;
 };
 const getCardDateRange = (value) => {
   cardData.value.dateRange = value;
+  isLoading.value.dateRange = true;
 };
 const getCardWorkingHours = (value) => {
   cardData.value.workingHours = value;
+  isLoading.value.workingHours = true;
 };
 const getCardImportance = (value) => {
   cardData.value.importance = value;
+  isLoading.value.importance = true;
 };
 const getCardComment = async (value) => {
   if (value) {
-    const {data} = await axios.get(`${apiUrl}/cards/${cardData.value._id}`);
-    cardData.value.comments = data.data.comments
-  };
+    const { data } = await axios.get(`${apiUrl}/cards/${cardData.value._id}`);
+    cardData.value.comments = data.data.comments;
+  }
 };
 const getCardContent = (value) => {
   cardData.value.content = value;
 };
 const getCardToDoList = async (value) => {
   if (value) {
-    const {data} = await axios.get(`${apiUrl}/cards/${cardData.value._id}`);
-    cardData.value.toDoList = data.data.toDoList
+    const { data } = await axios.get(`${apiUrl}/cards/${cardData.value._id}`);
+    cardData.value.toDoList = data.data.toDoList;
   }
 };
 
@@ -107,23 +125,30 @@ const daysDiff = (startTimeStamp, endTimeStamp) => {
   return daysDiff;
 };
 const isLoadingReset = () => {
-  const keys = Object.keys(isLoading.value)
+  const keys = Object.keys(isLoading.value);
   keys.forEach((key) => {
-    isLoading.value[key] = false
-  })
-}
+    isLoading.value[key] = false;
+  });
+};
 const submitCardData = async () => {
   await axios.patch(apiUrl + "/cards/" + cardData.value._id, cardData.value);
   isLoadingReset();
 };
-watch(() => cardData.value, () => {
-  submitCardData();
-}, {
-  deep: true
-})
-watch(() => props.person, () => {
-  person.value = props.person;
-})
+watch(
+  () => cardData.value,
+  () => {
+    submitCardData();
+  },
+  {
+    deep: true,
+  }
+);
+watch(
+  () => props.person,
+  () => {
+    person.value = props.person;
+  }
+);
 </script>
 
 <template>
@@ -163,7 +188,13 @@ watch(() => props.person, () => {
             class="hidden text-gray-400 cursor-pointer group-hover:block hover:text-gray-800 ml-1"
             @click="isEditTitle = true"
           />
-          <n-icon v-else size="20" :component="MdCheckmark" class="text-gray-400 cursor-pointer hover:text-gray-800" @click="isEditTitle = false"/>
+          <n-icon
+            v-else
+            size="20"
+            :component="MdCheckmark"
+            class="text-gray-400 cursor-pointer hover:text-gray-800"
+            @click="isEditTitle = false"
+          />
         </span>
       </h3>
       <button @click="cardData.isPinned = !cardData.isPinned">
@@ -235,33 +266,38 @@ watch(() => props.person, () => {
         </li>
         <!-- Card Members -->
         <li class="mb-5">
-          <CardMembers :members="cardData.members" @update="getCardMembers" />
+          <CardMembers
+            :members="cardData.members"
+            :isLoading="isLoading.members"
+            @update="getCardMembers"
+          />
         </li>
         <!-- Card Tags -->
         <li class="mb-5">
-          <CardTags :tags="cardData.tags" @update="getCardTags" />
+          <CardTags :tags="cardData.tags" :isLoading="isLoading.tags" @update="getCardTags" />
         </li>
         <!-- Card Notify -->
         <li class="mb-5">
           <CardNotifications
             :notification="cardData.notification"
+            :isLoading="isLoading.notification"
             @update="getCardNotification"
           />
         </li>
         <!-- Card DeadLine -->
         <li class="mb-5">
-          <CardDateRange :dateRange="cardData.dateRange" @update="getCardDateRange" />
+          <CardDateRange :dateRange="cardData.dateRange" :isLoading="isLoading.dateRange" @update="getCardDateRange" />
         </li>
         <!-- Card WorkingHours -->
         <li class="mb-5">
           <CardWorkingHours
-            :workingHours="cardData.workingHours"
+            :workingHours="cardData.workingHours" :isLoading="isLoading.workingHours"
             @update="getCardWorkingHours"
           />
         </li>
         <!-- Card Importance -->
         <li class="mb-5">
-          <CardImportance :importance="cardData.importance" @update="getCardImportance" />
+          <CardImportance :importance="cardData.importance" :isLoading="isLoading.importance" @update="getCardImportance" />
         </li>
       </ul>
     </form>
@@ -284,7 +320,11 @@ watch(() => props.person, () => {
     </section>
     <section class="pb-6 mb-6">
       <h4 class="text-2xl">待辦清單</h4>
-      <CardToDoList :cardId="cardData._id" :toDoList="cardData.toDoList" @updateToDoList="getCardToDoList" />
+      <CardToDoList
+        :cardId="cardData._id"
+        :toDoList="cardData.toDoList"
+        @updateToDoList="getCardToDoList"
+      />
     </section>
     <template #footer>
       <div class="flex justify-around">

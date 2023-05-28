@@ -5,9 +5,15 @@ import {
   NDynamicTags,
 } from "naive-ui";
 import { IosPricetags } from "@vicons/ionicons4";
+import IconSpin from "@/components/IconSpin.vue";
+
 const props = defineProps({
   tags: {
     type: Array,
+    required: true
+  },
+  isLoading: {
+    type: Boolean,
     required: true
   }
 });
@@ -20,7 +26,8 @@ watch(() => tags.value ,() => {
 <template>
   <div class="flex itemas-center">
     <label for="cardTags" class="mr-4">
-      <n-icon size="20" :component="IosPricetags" class="text-gray-500 block" />
+      <n-icon v-if="!props.isLoading" size="20" :component="IosPricetags" class="text-gray-500 block" />
+      <IconSpin v-else />
     </label>
     <n-dynamic-tags v-model:value="tags" />
   </div>

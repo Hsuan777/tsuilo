@@ -8,9 +8,15 @@ import {
   NSelect,
 } from "naive-ui";
 import { MdPeople } from "@vicons/ionicons4";
+import IconSpin from "@/components/IconSpin.vue";
+
 const props = defineProps({
   members: {
     type: Array,
+    required: true
+  },
+  isLoading: {
+    type: Boolean,
     required: true
   }
 });
@@ -115,7 +121,8 @@ watch(() => members.value ,() => {
 <template>
   <div class="flex items-center">
     <label for="cardMembers" class="mr-4">
-      <n-icon size="20" :component="MdPeople" class="text-gray-500 block" />
+      <n-icon v-if="!props.isLoading" size="20" :component="MdPeople" class="text-gray-500 block" />
+      <IconSpin v-else />
     </label>
     <div class="w-full">
       <n-select

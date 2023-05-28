@@ -1,11 +1,17 @@
 <script setup>
 import { ref, watch } from "vue";
 import { NIcon, NInputNumber } from "naive-ui";
+import IconSpin from "@/components/IconSpin.vue";
+
 const props = defineProps({
   workingHours: {
     type: Number,
     required: true,
   },
+  isLoading: {
+    type: Boolean,
+    required: true,
+  }
 });
 import { MdTime } from "@vicons/ionicons4";
 const emits = defineEmits(["update"]);
@@ -20,7 +26,8 @@ watch(
 <template>
   <div class="flex items-center">
     <label for="cardEstimatedHours" class="mr-4">
-      <n-icon size="20" :component="MdTime" class="text-gray-500 block" />
+      <n-icon v-if="!props.isLoading" size="20" :component="MdTime" class="text-gray-500 block" />
+      <IconSpin v-else />
     </label>
     <div class="mr-3">
       <n-input-number

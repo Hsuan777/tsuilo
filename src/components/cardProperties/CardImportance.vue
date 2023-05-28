@@ -1,11 +1,17 @@
 <script setup>
 import { ref, watch } from "vue";
 import { NIcon, NSelect } from "naive-ui";
+import IconSpin from "@/components/IconSpin.vue";
+
 const props = defineProps({
   importance: {
     type: String,
     required: true,
   },
+  isLoading: {
+    type: Boolean,
+    required: true,
+  }
 });
 import { IosAlert } from "@vicons/ionicons4";
 const emits = defineEmits(["update"]);
@@ -14,15 +20,15 @@ const importance = ref(props.importance);
 const importanceOptions = [
   {
     label: "高",
-    value: "high",
+    value: "高",
   },
   {
     label: "中",
-    value: "medium",
+    value: "中",
   },
   {
     label: "低",
-    value: "low",
+    value: "低",
   },
 ];
 watch(
@@ -35,7 +41,8 @@ watch(
 <template>
   <div class="flex items-center">
     <label for="cardImportance" class="mr-4">
-      <n-icon size="20" :component="IosAlert" class="text-gray-500 block" />
+      <n-icon v-if="!props.isLoading" size="20" :component="IosAlert" class="text-gray-500 block" />
+      <IconSpin v-else />
     </label>
     <n-select
       id="cardImportance"
