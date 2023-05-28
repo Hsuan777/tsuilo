@@ -1,6 +1,6 @@
 <script setup>
 import { ref, watch, computed } from "vue";
-import { NButton, NModal, NIcon, NProgress, NInput, useNotification } from "naive-ui";
+import { NButton, NModal, NIcon, NProgress, NInput } from "naive-ui";
 import { IosStarOutline, IosStar, MdCalendar, MdTime, MdCheckmark } from "@vicons/ionicons4";
 import { ChecklistRound } from "@vicons/material";
 import { Edit20Regular } from "@vicons/fluent";
@@ -22,7 +22,6 @@ import CardToDoList from "@/components/cardProperties/CardToDoList.vue";
 import QuillEditor from "@/components/QuillEditor.vue";
 
 const apiUrl = import.meta.env.VITE_API_URL;
-// const notification = useNotification();
 const bodyStyle = ref({ width: "856px" });
 const segmented = ref({
   content: "soft",
@@ -33,6 +32,10 @@ const props = defineProps({
   cardData: {
     type: Object,
     require: true
+  },
+  person: {
+    type: Object,
+    require: true
   }
 });
 const showModal = ref(false);
@@ -41,12 +44,8 @@ const isLoading = ref({
   description: false
 })
 
-const person = ref({
-  id: "qqq-xxx",
-  name: "Iven",
-  avatar: "https://07akioni.oss-cn-beijing.aliyuncs.com/07akioni.jpeg",
-});
 const cardData = ref(props.cardData);
+const person = ref(props.person);
 const getCardDescription = (value) => {
   cardData.value.description = value;
   isLoading.value.description = true;
@@ -69,8 +68,11 @@ const getCardWorkingHours = (value) => {
 const getCardImportance = (value) => {
   cardData.value.importance = value;
 };
-const getCardComment = (value) => {
-  cardData.value.comments = value;
+const getCardComment = async (value) => {
+  if (value) {
+    const {data} = await axios.get(`${apiUrl}/cards/${cardData.value._id}`);
+    cardData.value.comments = data.data.comments
+  };
 };
 const getCardContent = (value) => {
   cardData.value.content = value;
@@ -108,25 +110,16 @@ const isLoadingReset = () => {
   })
 }
 const submitCardData = async () => {
-  // emit("update", cardData.value);
-  const {data} = await axios.patch(apiUrl + "/cards/" + cardData.value._id, cardData.value);
-  console.log(data);
+  await axios.patch(apiUrl + "/cards/" + cardData.value._id, cardData.value);
   isLoadingReset();
-  // notification.create({
-  //   title: "送出卡片資料",
-  //   content: `已儲存`,
-  //   duration: 2000,
-  //   closable: false,
-  //   meta: DateTime.fromMillis(Date.now()).toFormat("yyyy/MM/dd"),
-  //   onAfterLeave: () => {
-  //     showModal.value = false;
-  //   },
-  // });
 };
 watch(() => cardData.value, () => {
   submitCardData();
 }, {
   deep: true
+})
+watch(() => props.person, () => {
+  person.value = props.person;
 })
 </script>
 
@@ -273,6 +266,7 @@ watch(() => cardData.value, () => {
     <section class="pb-6 mb-6 border-b">
       <h4 class="text-2xl mb-9">評論</h4>
       <CardComments
+        :cardId="cardData._id"
         :person="person"
         :comments="cardData.comments"
         @updateComment="getCardComment"
@@ -291,8 +285,8 @@ watch(() => cardData.value, () => {
     </section>
     <template #footer>
       <div class="flex justify-around">
-        <n-button @click="submitCardData"> 確定 </n-button>
-        <n-button @click="showModal = false" type="tertiary"> 取消 </n-button>
+        <!-- <n-button @click="submitCardData"> 確定 </n-button> -->
+        <n-button @click="showModal = false" type="tertiary">關閉</n-button>
       </div>
     </template>
   </n-modal>

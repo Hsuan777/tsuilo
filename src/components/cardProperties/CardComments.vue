@@ -1,12 +1,19 @@
 <script setup>
-import { ref } from "vue";
-import { NAvatar, NInput, NIcon } from "naive-ui";
+import { ref, watch } from "vue";
+import { NAvatar, NInput, NIcon, useNotification } from "naive-ui";
 import { DateTime } from "luxon";
-import { v4 as uuidv4 } from "uuid";
+// import { v4 as uuidv4 } from "uuid";
 import { Delete20Regular } from "@vicons/fluent";
+import axios from  "axios";
+
+const apiUrl = import.meta.env.VITE_API_URL;
 const props = defineProps({
   comments: {
     type: Array,
+    required: true,
+  },
+  cardId: {
+    type: String,
     required: true,
   },
   person: {
@@ -16,30 +23,49 @@ const props = defineProps({
 });
 const emits = defineEmits(["updateComment"]);
 const comments = ref(props.comments);
-const inputComment = ref("");
+const cardId = ref(props.cardId);
 const person = ref(props.person);
-console.log(comments.value);
-console.log(person.value.id);
-const submitComment = (event) => {
-  if (event.target.value === "") return;
-  const comment = {
-    id: uuidv4(),
-    commenter: {
-      id: "qqq-xxx",
-      name: person.value.name,
-      avatar: "https://07akioni.oss-cn-beijing.aliyuncs.com/07akioni.jpeg",
-    },
-    comment: event.target.value,
-    createAt: Date.now(),
+const inputComment = ref("");
+const notification = useNotification();
+const checkToken = () => {
+  const token = document.cookie.replace(/(?:(?:^|.*;\s*)tsToken\s*=\s*([^;]*).*$)|^.*$/, '$1');
+  if (!token) {
+    return false;
   }
-  comments.value.push(comment);
-  emits("updateComment", comments);
-  inputComment.value = "";
-};
-const removeComment = (deleteCommentId) => {
-  const filterData = comments.value.filter((comment) => comment.id != deleteCommentId);
-  emits("updateComment", filterData);
+  axios.defaults.headers.common.Authorization = `Bearer ${token}` ;
+  return true;
 }
+const submitComment = async (event) => {
+  if (event.target.value === "") return;
+  if (!checkToken()) return;
+  const comment = {
+    comment: event.target.value,
+  };
+  await axios.post(`${apiUrl}/cards/${cardId.value}/comment`, comment);
+  notification.create({
+    title: "新增評論",
+    content: "成功",
+    duration: 2000,
+    closable: false,
+    meta: DateTime.fromMillis(Date.now()).toFormat("yyyy/MM/dd hh:mm:ss"),
+  });
+  inputComment.value = "";
+  emits("updateComment", true);
+};
+const removeComment = async (commentId) => {
+  await axios.delete(`${apiUrl}/cards/${cardId.value}/comment/${commentId}`);
+  notification.create({
+    title: "移除評論",
+    content: "成功",
+    duration: 2000,
+    closable: false,
+    meta: DateTime.fromMillis(Date.now()).toFormat("yyyy/MM/dd hh:mm:ss"),
+  });
+  emits("updateComment", true);
+}
+watch(() => props.comments, () => {
+  comments.value = props.comments;
+});
 </script>
 <template>
   <ul>
@@ -54,7 +80,7 @@ const removeComment = (deleteCommentId) => {
         <n-input size="large" round placeholder="請輸入評論" v-model:value="inputComment" @keydown.enter="submitComment" clearable />
       </div>
     </li>
-    <li v-for="comment in comments" :key="comment.id" class="group flex justify-between items-center mb-1 hover:bg-gray-100 rounded p-1">
+    <li v-for="comment in comments" :key="comment._id" class="group flex justify-between items-center mb-1 hover:bg-gray-100 rounded p-1">
       <div class="flex items-center">
         <n-avatar
           round
@@ -63,11 +89,11 @@ const removeComment = (deleteCommentId) => {
           class="mr-2"
         />
         <div>
-          <p class="text-xl">{{ comment.commenter.name }}<span class="text-sm ml-2">{{ DateTime.fromMillis(comment.createAt).toFormat('yyyy/MM/dd') }}</span></p>
+          <p class="text-xl">{{ comment.commenter.name }}<span class="text-sm ml-2">{{ DateTime.fromISO(comment.createdAt).toFormat('yyyy/MM/dd') }}</span></p>
           <p>{{ comment.comment }}</p>
         </div>
       </div>
-      <n-icon size="20" :component="Delete20Regular" class="hidden text-gray-400 cursor-pointer hover:text-gray-800 mx-3" :class="comment.commenter.id === person.id? 'group-hover:block': ''" @click="removeComment(comment.id)"/>
+      <n-icon size="20" :component="Delete20Regular" class="hidden text-gray-400 cursor-pointer hover:text-gray-800 mx-3" :class="comment.commenter.id === person.id? 'group-hover:block': ''" @click="removeComment(comment._id)"/>
     </li>
   </ul>
 </template>

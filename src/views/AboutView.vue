@@ -15,6 +15,7 @@ ws.addEventListener("open", () => {
 });
 const apiUrl = import.meta.env.VITE_API_URL;
 const cards = ref([]);
+const person = ref({});
 const checkToken = () => {
   const token = document.cookie.replace(/(?:(?:^|.*;\s*)tsToken\s*=\s*([^;]*).*$)|^.*$/, '$1');
   if (!token) {
@@ -40,9 +41,16 @@ const getCards = async () => {
   const {data} = await axios.get(apiUrl + "/cards");
   cards.value = data.data;
 }
+const checkUser = async () => {
+  if (!checkToken()) return;
+  const {data} = await axios.get(apiUrl + "/profile");
+  person.value = data.data;
+  console.log(person.value);
+}
 
 onMounted(() => {
   getCards();
+  checkUser();
 })
 </script>
 <template>
@@ -55,7 +63,7 @@ onMounted(() => {
     <h2 class="text-center mb-3">卡片清單</h2>
     <ul class="border p-2">
       <li v-for="card in cards" :key="card.id" class="mb-3">
-        <CardModel :cardData="card" />
+        <CardModel :cardData="card" :person="person"/>
       </li>
     </ul>
   </div>
