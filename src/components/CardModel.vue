@@ -92,8 +92,8 @@ const getCardComment = async (value) => {
     cardData.value.comments = data.data.comments;
   }
 };
-const getCardContent = (value) => {
-  cardData.value.content = value;
+const getCardContent = async (value) => {
+  cardData.value.content = JSON.stringify(value);
 };
 const getCardToDoList = async (value) => {
   if (value) {
@@ -316,7 +316,7 @@ watch(
       <h4 class="text-2xl">卡片內容</h4>
       <!-- <BlockSuite /> -->
       <!-- <CKEditor :content="cardData.content" @update="getCardContent" /> -->
-      <QuillEditor :content="cardData.content" @update="getCardContent" />
+      <QuillEditor :cardId="cardData._id" :content="cardData.content" @update="getCardContent"/>
     </section>
     <section class="pb-6 mb-6">
       <h4 class="text-2xl">待辦清單</h4>

@@ -1,20 +1,25 @@
 <script setup>
 import { ref } from "vue"
-import { QuillEditor } from '@vueup/vue-quill'
+import { QuillEditor, Delta } from '@vueup/vue-quill'
 import '@vueup/vue-quill/dist/vue-quill.snow.css';
 import ImageUploader from 'quill-image-uploader';
 import axios from "axios";
 
 const props = defineProps({
   content: {
+    type: String,
     required: true,
   },
   readOnly: {
     type: Boolean,
     default: false
+  },
+  cardId: {
+    type: String,
+    required: true,
   }
 });
-const content = ref(props.content);
+const content = ref(new Delta(JSON.parse(props.content)));
 const quillOptions = {
   modules: {
     toolbar: "minimal",
@@ -45,11 +50,11 @@ const modules = {
     }
   }
 }
-const getContent = (value) => {
+const patchCardContent = async (value) => {
   emit("update", value);
-}
+};
 </script>
 <template>
-  <QuillEditor v-model:content="content" toolbar="full" :options="quillOptions" :modules="modules" @update:content="getContent"/>
+  <QuillEditor v-model:content="content" toolbar="full" :options="quillOptions" :modules="modules" @update:content="patchCardContent"/>
 </template>
 <style></style>
