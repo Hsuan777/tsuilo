@@ -1,6 +1,6 @@
 <script setup>
-import { ref, watch, computed } from "vue";
-import { NButton, NModal, NIcon, NProgress, NInput } from "naive-ui";
+import { ref, watch, onMounted, computed } from "vue";
+import { NButton, NModal, NIcon, NProgress, NInput, NColorPicker } from "naive-ui";
 import {
   IosStarOutline,
   IosStar,
@@ -8,7 +8,7 @@ import {
   MdTime,
   MdCheckmark,
 } from "@vicons/ionicons4";
-import { ChecklistRound } from "@vicons/material";
+import { ChecklistRound, PaletteOutlined } from "@vicons/material";
 import { Edit20Regular } from "@vicons/fluent";
 import { DateTime } from "luxon";
 import axios from "axios";
@@ -58,6 +58,8 @@ const isLoading = ref({
 
 const cardData = ref(props.cardData);
 const person = ref(props.person);
+const pickerColor = ref("");
+
 const getCardDescription = (value) => {
   cardData.value.description = value;
   isLoading.value.description = true;
@@ -134,6 +136,33 @@ const submitCardData = async () => {
   await axios.patch(apiUrl + "/cards/" + cardData.value._id, cardData.value);
   isLoadingReset();
 };
+const colorPickerShow = ref(false);
+// const clickColorPicker = () => {
+//   const colorPickerDOM = document.querySelector(".n-color-picker-trigger");
+//   console.log(colorPickerDOM);
+//   colorPickerDOM.click();
+//   // colorPicker.value.click();
+// }
+const changeHeaderColor = (name) => {
+  const headerDOM = document.querySelector(".n-card-header");
+  switch (name) {
+    case "color":
+      headerDOM.style.background = pickerColor.value;
+      cardData.value.headerCover = pickerColor.value;
+      break;
+    case "image":
+      headerDOM.style.background = pickerColor.value;
+      cardData.value.headerCover = pickerColor.value;
+      break;
+    default:
+      headerDOM.style.background = "linear-gradient(to right, #ff006e, #00b3f0)";
+      cardData.value.headerCover= "linear-gradient(to right, #ff006e, #00b3f0)";
+      break;
+  }
+};
+watch(() => pickerColor.value, () => {
+  changeHeaderColor("color");
+});
 watch(
   () => cardData.value,
   () => {
@@ -149,6 +178,14 @@ watch(
     person.value = props.person;
   }
 );
+watch(() => showModal.value, (value) => {
+  if (value) {
+    setTimeout(() => {
+      const headerDOM = document.querySelector(".n-card-header");
+      headerDOM.style.background = cardData.value.headerCover;
+    }, 100);
+  }
+})
 </script>
 
 <template>
@@ -165,6 +202,12 @@ watch(
     :bordered="false"
     :segmented="segmented"
   >
+    <template #header>
+      <div class="flex gap-3" :class="colorPickerShow? 'visible': 'invisible'">
+        <input type="button" value="Default" class="border vis text-white px-2 rounded" @click="changeHeaderColor"/>
+        <n-color-picker v-model:value="pickerColor" class="w-1/4">asd</n-color-picker>
+      </div>
+    </template>
     <!-- Card title -->
     <div class="flex justify-between mb-9">
       <h3 class="flex items-center text-2xl group">
@@ -197,6 +240,14 @@ watch(
           />
         </span>
       </h3>
+      <button class="ml-auto mr-3">
+        <n-icon
+          size="20"
+          :component="PaletteOutlined"
+          @click="colorPickerShow = !colorPickerShow"
+          :class="colorPickerShow ? 'text-red-500' : ''"
+        />
+      </button>
       <button @click="cardData.isPinned = !cardData.isPinned">
         <n-icon
           size="20"

@@ -19,7 +19,10 @@ const props = defineProps({
     required: true,
   }
 });
-const content = ref(new Delta(JSON.parse(props.content)));
+const content = ref(props.content);
+if (props.content !== "") {
+  content.value = new Delta(JSON.parse(content.value));
+}
 const quillOptions = {
   modules: {
     toolbar: "minimal",
