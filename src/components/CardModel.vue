@@ -1,5 +1,5 @@
 <script setup>
-import { ref, watch, onMounted, computed } from "vue";
+import { ref, watch, computed } from "vue";
 import { NButton, NModal, NIcon, NProgress, NInput, NColorPicker } from "naive-ui";
 import {
   IosStarOutline,

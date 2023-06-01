@@ -4,7 +4,6 @@ import { QuillEditor, Delta } from '@vueup/vue-quill'
 import '@vueup/vue-quill/dist/vue-quill.snow.css';
 import ImageUploader from 'quill-image-uploader';
 import axios from "axios";
-
 const props = defineProps({
   content: {
     type: String,
@@ -31,8 +30,8 @@ const quillOptions = {
   theme: "snow"
 }
 const emit = defineEmits(["update"]);
-const modules = {
-  name: 'imageUploader',
+const imageUploaderModule = {
+  name: "imageUploader",
   module: ImageUploader,
   options: {
     upload: file => {
@@ -52,12 +51,12 @@ const modules = {
       })
     }
   }
-}
+};
 const patchCardContent = async (value) => {
   emit("update", value);
 };
 </script>
 <template>
-  <QuillEditor v-model:content="content" toolbar="full" :options="quillOptions" :modules="modules" @update:content="patchCardContent"/>
+  <QuillEditor v-model:content="content" toolbar="full" :options="quillOptions" :modules="imageUploaderModule" @update:content="patchCardContent"/>
 </template>
 <style></style>
