@@ -77,8 +77,27 @@ const removeToDo = async (toDoId) => {
   });
   emits("updateToDoList", true);
 }
-const saveAsCard = () => {
-  console.log("save as card");
+const saveAsCard = (toDo) => {
+  const card = {
+    ...toDo
+  };
+  delete card._id;
+  delete card.isFinished;
+  createCard(card);
+  removeToDo(toDo._id);
+  notification.create({
+    title: "待辦另存卡片",
+    content: "已新增卡片",
+    duration: 2000,
+    closable: false,
+    meta: DateTime.fromMillis(Date.now()).toFormat("yyyy/MM/dd hh:mm:ss"),
+  });
+}
+const createCard = async (saveCardData) => {
+  if (!checkToken()) return;
+  if (saveCardData.title.trim() === "") return;
+  await axios.post(apiUrl + "/cards", saveCardData);
+
 }
 const getToDoWorkingHours = (value) => {
   editToDo.value.workingHours = value;
@@ -122,7 +141,7 @@ watch(() => props.toDoList, () => {
         <div v-if="!editToDo._id" class="hidden group-hover:flex mr-3">
           <n-icon size="20" :component="Edit20Regular" class="text-gray-400 cursor-pointer hover:text-gray-800" @click="editType(toDo)"/>
           <n-icon size="20" :component="Delete20Regular" class="text-gray-400 cursor-pointer hover:text-gray-800 mx-3" @click="removeToDo(toDo._id)"/>
-          <n-icon size="20" :component="Open" class="text-gray-400 cursor-pointer hover:text-gray-800" @click="saveAsCard(toDo._id)"/>
+          <n-icon size="20" :component="Open" class="text-gray-400 cursor-pointer hover:text-gray-800" @click="saveAsCard(toDo)"/>
         </div>
         <div class="flex items-center ml-auto mr-3">
           <n-icon size="20" :component="MdTime" class="text-gray-500 block mr-1" />
